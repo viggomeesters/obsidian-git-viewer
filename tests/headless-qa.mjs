@@ -47,6 +47,8 @@ fs.unlinkSync(path.join(testVault, "remove.md"));
 execFileSync("git", ["mv", "rename-me.md", "renamed.md"], { cwd: testVault });
 fs.writeFileSync(path.join(testVault, "staged.md"), "staged\n");
 fs.writeFileSync(path.join(testVault, "untracked.md"), "untracked\n");
+fs.mkdirSync(path.join(testVault, "nested-untracked"), { recursive: true });
+fs.writeFileSync(path.join(testVault, "nested-untracked", "file.md"), "nested\n");
 execFileSync("git", ["add", "staged.md"], { cwd: testVault });
 
 const v2Output = execFileSync("git", ["status", "--porcelain=v2", "-z"], {
@@ -60,11 +62,18 @@ const output = execFileSync("git", ["status", "--porcelain=v1", "-z"], {
   encoding: "utf8",
 });
 const grouped = groupEntries(parsePorcelainV1z(output));
+const allUntrackedOutput = execFileSync("git", ["status", "--porcelain=v1", "-z", "--untracked-files=all"], {
+  cwd: testVault,
+  encoding: "utf8",
+});
+const allUntrackedGrouped = groupEntries(parsePorcelainV1z(allUntrackedOutput));
 
 assert.equal(grouped.changed.some((entry) => entry.path === "tracked.md"), true);
 assert.equal(grouped.deleted.some((entry) => entry.path === "remove.md"), true);
 assert.equal(grouped.staged.some((entry) => entry.path === "staged.md"), true);
 assert.equal(grouped.untracked.some((entry) => entry.path === "untracked.md"), true);
+assert.equal(grouped.untracked.some((entry) => entry.path === "nested-untracked/"), true);
+assert.equal(allUntrackedGrouped.untracked.some((entry) => entry.path === "nested-untracked/file.md"), true);
 assert.equal(grouped.renamed.some((entry) => entry.path === "renamed.md" && entry.originalPath === "rename-me.md"), true);
 assert.equal(fs.existsSync(path.join(pluginDir, "main.js")), true);
 assert.equal(fs.existsSync(path.join(pluginDir, "manifest.json")), true);

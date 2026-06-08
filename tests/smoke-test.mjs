@@ -10,7 +10,7 @@ assert.equal(manifest.id, "git-viewer");
 assert.equal(manifest.name, "Git Viewer");
 assert.equal(manifest.isDesktopOnly, true);
 assert.match(manifest.description, /read-only/i);
-assert.match(gitStatus, /status", "--porcelain=v1", "-z"/);
+assert.match(gitStatus, /status", "--porcelain=v1", "-z", "--untracked-files=all"/);
 assert.match(main, /registerView/);
 assert.match(main, /addRibbonIcon/);
 assert.match(main, /getAbstractFileByPath/);

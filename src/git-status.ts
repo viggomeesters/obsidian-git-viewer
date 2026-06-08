@@ -55,7 +55,7 @@ export async function getGitStatus(
     (await runner.run(["rev-parse", "--show-toplevel"], { cwd: vaultPath })).trim(),
   );
   const branch = (await runner.run(["branch", "--show-current"], { cwd: repoRoot })).trim();
-  const output = await runner.run(["status", "--porcelain=v1", "-z"], { cwd: repoRoot });
+  const output = await runner.run(["status", "--porcelain=v1", "-z", "--untracked-files=all"], { cwd: repoRoot });
   const entries = parsePorcelainV1z(output);
 
   return {
