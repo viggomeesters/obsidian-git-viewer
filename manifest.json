@@ -1,9 +1,9 @@
 {
   "id": "git-viewer",
   "name": "Git Viewer",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "minAppVersion": "1.5.0",
-  "description": "Lightweight read-only Git status viewer. No pull, clone, branch management, commit, push, discard, or reset in v0.1.",
+  "description": "Lightweight Git status viewer with explicit selected-file commits. No pull, clone, branch management, push, discard, or reset.",
   "author": "Viggo Meesters",
   "authorUrl": "https://github.com/viggomeesters",
   "isDesktopOnly": true

@@ -4,7 +4,7 @@
   <rect width="1280" height="640" fill="#111318"/>
   <rect x="72" y="72" width="1136" height="496" rx="28" fill="#1b1f28" stroke="#343b49" stroke-width="2"/>
   <text x="128" y="184" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="900">Git Viewer</text>
-  <text x="132" y="240" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="30">Read-only Git status inside your vault.</text>
+  <text x="132" y="240" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="30">Git status and selected commits inside your vault.</text>
   <g transform="translate(132 318)">
     <rect width="1016" height="148" rx="18" fill="#111318" stroke="#303642" stroke-width="2"/>
     <text x="34" y="58" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">CHANGED</text>

@@ -12,6 +12,8 @@ Do not include sensitive vault content in public issues. If a reproduction needs
 
 ## Security posture
 
-Git Viewer is read-only in v0.1. It runs local `git` commands against the current vault or repository and renders status output inside Obsidian.
+Git Viewer runs local `git` commands against the current vault or repository and renders status output inside Obsidian.
 
-The plugin code does not make network requests, does not read or write the system clipboard, and does not modify files. It does not run pull, clone, fetch, merge, rebase, stage, unstage, commit, push, reset, discard, or branch management commands.
+The plugin code does not make network requests and does not read or write the system clipboard.
+
+The only write action is **Commit selected**. It creates a commit from explicitly selected paths through a temporary Git index, then refreshes the selected paths in the real index after the branch is advanced. It does not run pull, clone, fetch, merge, rebase, stage, unstage, push, reset, discard, or branch management commands.

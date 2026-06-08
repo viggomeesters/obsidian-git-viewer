@@ -1,6 +1,6 @@
 # Obsidian Community Submission Checklist
 
-Current release target: `0.1.1`
+Current release target: `0.2.0`
 
 ## Repository
 

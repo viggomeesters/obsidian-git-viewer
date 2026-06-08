@@ -11,6 +11,7 @@ import {
   GitStatusEntry,
   GitStatusGroup,
   GitStatusSnapshot,
+  commitSelectedEntries,
   getGitStatus,
   groupEntries,
   toVaultRelativePath,
@@ -109,6 +110,9 @@ class GitViewerView extends ItemView {
   private snapshot: GitStatusSnapshot | null = null;
   private error: string | null = null;
   private loading = false;
+  private committing = false;
+  private commitMessage = "";
+  private selectedEntryKeys = new Set<string>();
 
   constructor(
     leaf: WorkspaceLeaf,
@@ -219,6 +223,9 @@ class GitViewerView extends ItemView {
       });
     }
 
+    this.retainVisibleSelections(visibleEntries);
+    this.renderCommitPanel(container, visibleEntries);
+
     const grouped = groupEntries(visibleEntries);
     const sections = container.createDiv({ cls: "git-viewer__sections" });
     for (const group of GROUP_ORDER) {
@@ -236,15 +243,40 @@ class GitViewerView extends ItemView {
 
     const list = section.createDiv({ cls: "git-viewer__list" });
     for (const entry of entries) {
-      const item = list.createEl("button", { cls: "git-viewer__item" });
+      const item = list.createDiv({ cls: "git-viewer__item" });
       const file = this.getOpenableFile(entry);
       const isOpenable = file instanceof TFile;
+      const entryKey = getEntryKey(entry);
+
+      const checkbox = item.createEl("input", {
+        cls: "git-viewer__checkbox",
+        attr: {
+          "aria-label": `Select ${entry.path} for commit`,
+          type: "checkbox",
+        },
+      }) as HTMLInputElement;
+      checkbox.checked = this.selectedEntryKeys.has(entryKey);
+      checkbox.disabled = this.committing;
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) {
+          this.selectedEntryKeys.add(entryKey);
+        } else {
+          this.selectedEntryKeys.delete(entryKey);
+        }
+        this.render();
+      });
+
+      item.createSpan({
+        cls: `git-viewer__badge git-viewer__badge--${group}`,
+        text: `${entry.indexStatus}${entry.worktreeStatus}`,
+      });
+
+      const openButton = item.createEl("button", { cls: "git-viewer__file-button" });
       if (!isOpenable) {
-        item.addClass("git-viewer__item--disabled");
-        item.disabled = true;
+        openButton.addClass("git-viewer__file-button--disabled");
+        openButton.disabled = true;
       }
-      item.createSpan({ cls: `git-viewer__badge git-viewer__badge--${group}`, text: `${entry.indexStatus}${entry.worktreeStatus}` });
-      const labels = item.createSpan({ cls: "git-viewer__item-labels" });
+      const labels = openButton.createSpan({ cls: "git-viewer__item-labels" });
       labels.createSpan({ cls: "git-viewer__path", text: entry.path });
       if (entry.originalPath) {
         labels.createSpan({ cls: "git-viewer__subpath", text: `from ${entry.originalPath}` });
@@ -252,10 +284,49 @@ class GitViewerView extends ItemView {
       if (!isOpenable) {
         labels.createSpan({ cls: "git-viewer__subpath", text: "not available in Obsidian" });
       }
-      item.addEventListener("click", () => {
+      openButton.addEventListener("click", () => {
         void this.openEntry(entry);
       });
     }
+  }
+
+  private renderCommitPanel(parent: HTMLElement, visibleEntries: GitStatusEntry[]): void {
+    const selectedEntries = this.getSelectedEntries(visibleEntries);
+    const panel = parent.createDiv({ cls: "git-viewer__commit-panel" });
+
+    const textarea = panel.createEl("textarea", {
+      cls: "git-viewer__commit-message",
+      attr: {
+        "aria-label": "Commit message",
+        placeholder: "Commit message",
+        rows: "3",
+      },
+    }) as HTMLTextAreaElement;
+    textarea.value = this.commitMessage;
+    textarea.disabled = this.committing;
+
+    const actions = panel.createDiv({ cls: "git-viewer__commit-actions" });
+    actions.createSpan({
+      cls: "git-viewer__commit-count",
+      text: `${selectedEntries.length} selected`,
+    });
+
+    const commitButton = actions.createEl("button", {
+      cls: "git-viewer__commit-button",
+      text: this.committing ? "Committing..." : "Commit selected",
+    });
+
+    const updateButton = () => {
+      commitButton.disabled = this.committing || selectedEntries.length === 0 || this.commitMessage.trim().length === 0;
+    };
+    textarea.addEventListener("input", () => {
+      this.commitMessage = textarea.value;
+      updateButton();
+    });
+    commitButton.addEventListener("click", () => {
+      void this.commitSelectedVisibleEntries(visibleEntries);
+    });
+    updateButton();
   }
 
   private async openEntry(entry: GitStatusEntry): Promise<void> {
@@ -272,6 +343,15 @@ class GitViewerView extends ItemView {
     return entries.filter((entry) => entry.group === "deleted" || this.getOpenableFile(entry) instanceof TFile);
   }
 
+  private getSelectedEntries(visibleEntries: GitStatusEntry[]): GitStatusEntry[] {
+    return visibleEntries.filter((entry) => this.selectedEntryKeys.has(getEntryKey(entry)));
+  }
+
+  private retainVisibleSelections(visibleEntries: GitStatusEntry[]): void {
+    const visibleKeys = new Set(visibleEntries.map(getEntryKey));
+    this.selectedEntryKeys = new Set(Array.from(this.selectedEntryKeys).filter((key) => visibleKeys.has(key)));
+  }
+
   private getOpenableFile(entry: GitStatusEntry): TFile | null {
     const snapshot = this.snapshot;
     const vaultPath = this.plugin.getVaultBasePath();
@@ -283,6 +363,37 @@ class GitViewerView extends ItemView {
     const file = this.app.vault.getAbstractFileByPath(vaultRelativePath);
     return file instanceof TFile ? file : null;
   }
+
+  private async commitSelectedVisibleEntries(visibleEntries: GitStatusEntry[]): Promise<void> {
+    const snapshot = this.snapshot;
+    if (!snapshot || this.committing) return;
+
+    const selectedEntries = this.getSelectedEntries(visibleEntries);
+    if (selectedEntries.length === 0) {
+      new Notice("Select at least one file to commit.");
+      return;
+    }
+    if (!this.commitMessage.trim()) {
+      new Notice("Enter a commit message.");
+      return;
+    }
+
+    this.committing = true;
+    this.render();
+
+    try {
+      const result = await commitSelectedEntries(snapshot.repoRoot, selectedEntries, this.commitMessage);
+      this.selectedEntryKeys.clear();
+      this.commitMessage = "";
+      new Notice(`Committed ${result.committedPaths.length} file${result.committedPaths.length === 1 ? "" : "s"}: ${result.commitHash.slice(0, 7)}`);
+      await this.refresh();
+    } catch (error) {
+      new Notice(getErrorMessage(error));
+    } finally {
+      this.committing = false;
+      this.render();
+    }
+  }
 }
 
 function renderMessage(parent: HTMLElement, message: string): void {
@@ -292,4 +403,8 @@ function renderMessage(parent: HTMLElement, message: string): void {
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error && error.message.trim()) return error.message;
   return String(error);
+}
+
+function getEntryKey(entry: GitStatusEntry): string {
+  return `${entry.indexStatus}${entry.worktreeStatus}\0${entry.path}\0${entry.originalPath ?? ""}`;
 }

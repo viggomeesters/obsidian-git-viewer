@@ -12,7 +12,7 @@
 
 ## Security
 
-- [ ] No Git write action added without explicit review
+- [ ] Commit behavior remains selected-file only
 - [ ] No network APIs added to plugin code
 - [ ] No clipboard access added without explicit user action
 - [ ] Any new Git command is documented and bounded

@@ -62,6 +62,40 @@
   padding: 8px 10px;
 }
 
+.git-viewer__commit-panel {
+  border: 1px solid var(--git-viewer-border);
+  border-radius: 6px;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+
+.git-viewer__commit-message {
+  font-family: var(--font-interface);
+  min-height: 62px;
+  resize: vertical;
+  width: 100%;
+}
+
+.git-viewer__commit-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.git-viewer__commit-count {
+  color: var(--git-viewer-muted);
+  font-size: 0.78em;
+}
+
+.git-viewer__commit-button {
+  flex: 0 0 auto;
+  min-height: 30px;
+}
+
 .git-viewer__section {
   display: flex;
   flex-direction: column;
@@ -101,10 +135,9 @@
   border: 0;
   border-bottom: 1px solid var(--git-viewer-border);
   color: var(--text-normal);
-  cursor: pointer;
   display: grid;
   gap: 8px;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: auto auto minmax(0, 1fr);
   min-height: 36px;
   padding: 7px 9px;
   text-align: left;
@@ -115,19 +148,36 @@
   border-bottom: 0;
 }
 
-.git-viewer__item:hover,
-.git-viewer__item:focus-visible {
-  background: var(--background-modifier-hover);
+.git-viewer__checkbox {
+  margin: 0;
 }
 
-.git-viewer__item--disabled {
-  cursor: default;
-  opacity: 0.68;
-}
-
-.git-viewer__item--disabled:hover,
-.git-viewer__item--disabled:focus-visible {
+.git-viewer__file-button {
+  align-items: center;
   background: transparent;
+  border: 0;
+  color: var(--text-normal);
+  cursor: pointer;
+  display: flex;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.git-viewer__file-button:hover,
+.git-viewer__file-button:focus-visible {
+  color: var(--text-accent);
+}
+
+.git-viewer__file-button--disabled {
+  color: var(--git-viewer-muted);
+  cursor: default;
+}
+
+.git-viewer__file-button--disabled:hover,
+.git-viewer__file-button--disabled:focus-visible {
+  color: var(--git-viewer-muted);
 }
 
 .git-viewer__badge {

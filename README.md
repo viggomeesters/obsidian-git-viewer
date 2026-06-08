@@ -6,12 +6,12 @@
   <a href="https://github.com/viggomeesters/obsidian-git-viewer/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/viggomeesters/obsidian-git-viewer?style=flat-square"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-green?style=flat-square"></a>
   <img alt="Obsidian 1.5.0+" src="https://img.shields.io/badge/Obsidian-1.5.0%2B-7c3aed?style=flat-square">
-  <img alt="Read-only" src="https://img.shields.io/badge/mode-read--only-0f766e?style=flat-square">
+  <img alt="No push" src="https://img.shields.io/badge/push-not%20included-0f766e?style=flat-square">
 </p>
 
 # Git Viewer
 
-Git Viewer is a lightweight read-only Git status viewer for Obsidian. It is built for people who want to stay inside Obsidian, see exactly which vault files changed, and open those files without launching a heavier Git client or Visual Studio Code.
+Git Viewer is a lightweight Git status and selected-file commit tool for Obsidian. It is built for people who want to stay inside Obsidian, see exactly which vault files changed, open those files, and make intentional commits without launching a heavier Git client or Visual Studio Code.
 
 ![Git Viewer preview](assets/screenshot.svg)
 
@@ -21,9 +21,10 @@ Git Viewer is a lightweight read-only Git status viewer for Obsidian. It is buil
 - Groups files into Staged, Changed, Untracked, Deleted, Renamed, and Conflicted.
 - Opens files inside Obsidian when they are inside the current vault.
 - Omits hidden/internal Git paths that Obsidian cannot open as vault files.
+- Commits only explicitly selected files with a required commit message.
+- Uses a temporary Git index for commits so unrelated staged or unstaged files are not included.
 - Uses local Git porcelain output through the `git` CLI.
 - Refreshes manually and after vault file events.
-- Stays read-only in v0.1.
 - Makes no network requests from plugin code.
 
 ## Non-goals
@@ -37,20 +38,19 @@ Git Viewer v0.1 deliberately does **not** include:
 - rebase
 - branch create/switch/delete
 - force push
-- commit
 - push
 - stage/unstage
 - discard/reset/delete
 - conflict resolution
 - automatic sync
 
-The plugin is a status viewer first. Write actions should only be added after the status and diff foundations are stable.
+The plugin is a status viewer with one narrow write action: commit selected files. It does not sync, pull, push, or manage branches.
 
 ## Roadmap
 
-### v0.2: Commit selected files
+### Commit selected files
 
-Commit support should be scoped and explicit:
+Commit support is intentionally scoped and explicit:
 
 - select files with checkboxes
 - enter a commit message
@@ -58,7 +58,7 @@ Commit support should be scoped and explicit:
 - commit through a temporary index or equivalent restore-safe strategy
 - never accidentally include unrelated staged or unstaged files
 
-It should not use a naive `git add <files> && git commit` flow by default, because that can disturb existing staged state in busy vaults.
+Git Viewer does not use a naive `git add <files> && git commit` flow, because that can disturb existing staged state in busy vaults.
 
 ## Installation
 
@@ -88,7 +88,15 @@ https://github.com/viggomeesters/obsidian-git-viewer
 
 Open the command palette and run **Open Git Viewer**, or click the Git Viewer ribbon icon. The view opens in the right sidebar.
 
-Click a file to open it in Obsidian. Deleted files and files outside the current vault cannot be opened.
+Click a file path to open it in Obsidian. Deleted files and files outside the current vault cannot be opened.
+
+To commit:
+
+1. Select one or more visible status rows.
+2. Write a commit message.
+3. Click **Commit selected**.
+
+The commit includes only the selected paths. Unselected staged files remain staged.
 
 ## Development
 
@@ -127,9 +135,9 @@ The current release is ready for review:
 
 - root `README.md`, `LICENSE`, and `manifest.json` exist
 - `manifest.json.id` is `git-viewer`
-- `manifest.json.version` is `0.1.1`
-- `versions.json` maps `0.1.1` to Obsidian `1.5.0`
-- GitHub release `0.1.1` should include `main.js`, `manifest.json`, and `styles.css`
+- `manifest.json.version` is `0.2.0`
+- `versions.json` maps `0.2.0` to Obsidian `1.5.0`
+- GitHub release `0.2.0` should include `main.js`, `manifest.json`, and `styles.css`
 
 Official references:
 
@@ -139,7 +147,9 @@ Official references:
 
 ## Security and privacy
 
-Git Viewer runs local `git` commands against the current vault or repository. It does not make network requests, does not use clipboard APIs, and does not modify files in v0.1.
+Git Viewer runs local `git` commands against the current vault or repository. It does not make network requests and does not use clipboard APIs.
+
+The only write action is **Commit selected**. It creates a commit from explicitly selected paths through a temporary Git index, then refreshes the selected paths in the real index after the branch is advanced. It does not pull, push, clone, fetch, merge, rebase, discard, reset, or manage branches.
 
 ## License
 

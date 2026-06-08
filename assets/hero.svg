@@ -1,6 +1,6 @@
 <svg width="1400" height="420" viewBox="0 0 1400 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Git Viewer for Obsidian</title>
-  <desc id="desc">A straight compact status hero for local Git status groups.</desc>
+  <desc id="desc">A straight compact status hero for local Git status and selected commits.</desc>
   <rect width="1400" height="420" fill="#111318"/>
   <rect x="48" y="48" width="1304" height="324" rx="18" fill="#181b22" stroke="#303642"/>
   <rect x="48" y="48" width="1304" height="54" rx="18" fill="#222633"/>
@@ -9,14 +9,14 @@
   <circle cx="112" cy="75" r="8" fill="#f59e0b"/>
   <circle cx="140" cy="75" r="8" fill="#22c55e"/>
   <text x="86" y="162" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="50" font-weight="850">Git Viewer</text>
-  <text x="88" y="204" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="20">Read-only Git status for vault files</text>
+  <text x="88" y="204" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="20">Git status and selected commits for vault files</text>
   <g transform="translate(88 246)">
     <rect width="112" height="34" rx="8" fill="#7c3aed"/>
     <text x="24" y="23" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">Status</text>
     <rect x="124" width="118" height="34" rx="8" fill="#1f2937" stroke="#303642"/>
     <text x="148" y="23" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">Refresh</text>
-    <rect x="254" width="178" height="34" rx="8" fill="#3a1616" stroke="#7f1d1d"/>
-    <text x="278" y="23" fill="#fecaca" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">No write actions</text>
+    <rect x="254" width="178" height="34" rx="8" fill="#0f3d2e" stroke="#166534"/>
+    <text x="282" y="23" fill="#bbf7d0" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">Commit selected</text>
   </g>
   <g transform="translate(782 112)">
     <rect width="490" height="240" rx="14" fill="#111318" stroke="#343b49"/>

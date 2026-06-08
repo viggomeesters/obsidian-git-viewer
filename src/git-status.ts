@@ -1,4 +1,6 @@
 import { execFile } from "node:child_process";
+import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -28,15 +30,16 @@ export interface GitStatusSnapshot {
 }
 
 export interface GitCommandRunner {
-  run(args: string[], options: { cwd: string }): Promise<string>;
+  run(args: string[], options: { cwd: string; env?: NodeJS.ProcessEnv }): Promise<string>;
 }
 
 export class CliGitCommandRunner implements GitCommandRunner {
-  async run(args: string[], options: { cwd: string }): Promise<string> {
+  async run(args: string[], options: { cwd: string; env?: NodeJS.ProcessEnv }): Promise<string> {
     try {
       const { stdout } = await execFileAsync("git", args, {
         cwd: options.cwd,
         encoding: "buffer",
+        env: options.env ? { ...process.env, ...options.env } : process.env,
         maxBuffer: 10 * 1024 * 1024,
         timeout: 8000,
       });
@@ -64,6 +67,96 @@ export async function getGitStatus(
     entries,
     grouped: groupEntries(entries),
   };
+}
+
+export interface GitCommitResult {
+  commitHash: string;
+  committedPaths: string[];
+}
+
+export async function commitSelectedEntries(
+  repoRoot: string,
+  entries: GitStatusEntry[],
+  message: string,
+  runner: GitCommandRunner = new CliGitCommandRunner(),
+): Promise<GitCommitResult> {
+  const commitMessage = message.trim();
+  if (!commitMessage) throw new Error("Commit message is required.");
+  if (entries.length === 0) throw new Error("Select at least one file to commit.");
+
+  const ref = (await runner.run(["symbolic-ref", "-q", "HEAD"], { cwd: repoRoot })).trim();
+  if (!ref) throw new Error("Cannot commit from detached HEAD.");
+
+  const tempIndexPath = path.join(
+    os.tmpdir(),
+    `git-viewer-index-${process.pid}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+  );
+  const tempIndexEnv = { GIT_INDEX_FILE: tempIndexPath };
+
+  try {
+    const parent = await getCurrentHead(repoRoot, runner);
+    await runner.run(parent ? ["read-tree", parent] : ["read-tree", "--empty"], {
+      cwd: repoRoot,
+      env: tempIndexEnv,
+    });
+
+    const pathsToAdd: string[] = [];
+    const pathsToRemove: string[] = [];
+    for (const entry of entries) {
+      if (entry.originalPath) pathsToRemove.push(entry.originalPath);
+      if (entry.group === "deleted") {
+        pathsToRemove.push(entry.path);
+      } else {
+        pathsToAdd.push(entry.path);
+      }
+    }
+
+    const removePaths = uniquePaths(pathsToRemove);
+    if (removePaths.length > 0) {
+      await runner.run(["rm", "--cached", "--ignore-unmatch", "--", ...removePaths], {
+        cwd: repoRoot,
+        env: tempIndexEnv,
+      });
+    }
+
+    const addPaths = uniquePaths(pathsToAdd);
+    if (addPaths.length > 0) {
+      await runner.run(["add", "--", ...addPaths], {
+        cwd: repoRoot,
+        env: tempIndexEnv,
+      });
+    }
+
+    const committedPaths = (await runner.run(["diff", "--cached", "--name-only"], {
+      cwd: repoRoot,
+      env: tempIndexEnv,
+    }))
+      .split("\n")
+      .map((line) => normalizeGitPath(line.trim()))
+      .filter(Boolean);
+    if (committedPaths.length === 0) throw new Error("Selected files do not contain commit changes.");
+
+    const tree = (await runner.run(["write-tree"], { cwd: repoRoot, env: tempIndexEnv })).trim();
+    const commitArgs = ["commit-tree", tree];
+    if (parent) commitArgs.push("-p", parent);
+    commitArgs.push("-m", commitMessage);
+    const commitHash = (await runner.run(commitArgs, { cwd: repoRoot, env: tempIndexEnv })).trim();
+
+    if (parent) {
+      await runner.run(["update-ref", "-m", "Git Viewer commit", ref, commitHash, parent], { cwd: repoRoot });
+    } else {
+      await runner.run(["update-ref", "-m", "Git Viewer commit", ref, commitHash], { cwd: repoRoot });
+    }
+
+    const resetPaths = uniquePaths([...addPaths, ...removePaths]);
+    if (resetPaths.length > 0) {
+      await runner.run(["reset", "-q", "--", ...resetPaths], { cwd: repoRoot });
+    }
+
+    return { commitHash, committedPaths };
+  } finally {
+    await fs.rm(tempIndexPath, { force: true });
+  }
 }
 
 export function parsePorcelainV1z(output: string): GitStatusEntry[] {
@@ -138,6 +231,18 @@ function normalizeGitPath(value: string): string {
 
 function normalizeSystemPath(value: string): string {
   return value.replace(/\\/g, "/");
+}
+
+async function getCurrentHead(repoRoot: string, runner: GitCommandRunner): Promise<string | null> {
+  try {
+    return (await runner.run(["rev-parse", "--verify", "HEAD"], { cwd: repoRoot })).trim();
+  } catch {
+    return null;
+  }
+}
+
+function uniquePaths(paths: string[]): string[] {
+  return Array.from(new Set(paths.map(normalizeGitPath).filter(Boolean)));
 }
 
 function formatGitCommandError(args: string[], error: unknown): string {

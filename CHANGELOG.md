@@ -2,6 +2,13 @@
 
 All notable changes to Git Viewer are documented here.
 
+## 0.2.0 - 2026-06-08
+
+- Add explicit selected-file commits from the Git Viewer sidebar.
+- Add checkboxes, commit message input, selected count, and Commit selected action.
+- Commit through a temporary Git index so unrelated staged and unstaged files are not included.
+- Keep pull, push, clone, branch management, discard, and reset out of scope.
+
 ## 0.1.1 - 2026-06-08
 
 - Hide hidden/internal Git paths that Obsidian cannot open as vault files.

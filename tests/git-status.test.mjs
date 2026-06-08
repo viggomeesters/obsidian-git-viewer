@@ -20,7 +20,9 @@ await esbuild.build({
 });
 
 const {
+  commitSelectedEntries,
   classifyStatus,
+  getGitStatus,
   groupEntries,
   parsePorcelainV1z,
   toVaultRelativePath,
@@ -97,5 +99,52 @@ assert.equal(statusGroups.changed.some((entry) => entry.path === "tracked.md"), 
 assert.equal(statusGroups.deleted.some((entry) => entry.path === "delete-me.md"), true);
 assert.equal(statusGroups.staged.some((entry) => entry.path === "staged.md"), true);
 assert.equal(statusGroups.untracked.some((entry) => entry.path === "new.md"), true);
+
+const commitRepo = fs.mkdtempSync(path.join(os.tmpdir(), "git-viewer-commit-"));
+execFileSync("git", ["init"], { cwd: commitRepo, stdio: "ignore" });
+execFileSync("git", ["config", "user.email", "git-viewer@example.test"], { cwd: commitRepo });
+execFileSync("git", ["config", "user.name", "Git Viewer Test"], { cwd: commitRepo });
+fs.writeFileSync(path.join(commitRepo, "selected.md"), "initial\n");
+fs.writeFileSync(path.join(commitRepo, "delete-selected.md"), "delete\n");
+fs.writeFileSync(path.join(commitRepo, "unrelated-staged.md"), "initial\n");
+execFileSync("git", ["add", "."], { cwd: commitRepo });
+execFileSync("git", ["commit", "-m", "initial"], { cwd: commitRepo, stdio: "ignore" });
+
+fs.writeFileSync(path.join(commitRepo, "selected.md"), "selected change\n");
+fs.unlinkSync(path.join(commitRepo, "delete-selected.md"));
+fs.writeFileSync(path.join(commitRepo, "new-selected.md"), "new selected\n");
+fs.writeFileSync(path.join(commitRepo, "unrelated-staged.md"), "must stay staged\n");
+execFileSync("git", ["add", "unrelated-staged.md"], { cwd: commitRepo });
+
+const commitSnapshot = await getGitStatus(commitRepo);
+const commitSelection = commitSnapshot.entries.filter((entry) =>
+  ["selected.md", "delete-selected.md", "new-selected.md"].includes(entry.path),
+);
+const commitResult = await commitSelectedEntries(commitSnapshot.repoRoot, commitSelection, "commit selected files");
+
+assert.match(commitResult.commitHash, /^[0-9a-f]{40}$/);
+assert.deepEqual(
+  commitResult.committedPaths.sort(),
+  ["delete-selected.md", "new-selected.md", "selected.md"],
+);
+assert.equal(
+  execFileSync("git", ["show", "--format=", "--name-only", "HEAD"], { cwd: commitRepo, encoding: "utf8" })
+    .trim()
+    .split("\n")
+    .sort()
+    .join(","),
+  "delete-selected.md,new-selected.md,selected.md",
+);
+assert.equal(
+  execFileSync("git", ["diff", "--cached", "--name-only"], { cwd: commitRepo, encoding: "utf8" }).trim(),
+  "unrelated-staged.md",
+);
+assert.equal(
+  execFileSync("git", ["status", "--porcelain=v1", "--", "selected.md", "delete-selected.md", "new-selected.md"], {
+    cwd: commitRepo,
+    encoding: "utf8",
+  }).trim(),
+  "",
+);
 
 console.log("Git status parser tests passed.");
