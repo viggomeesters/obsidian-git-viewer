@@ -92,7 +92,7 @@ Click a file path to open it in Obsidian. Deleted files and files outside the cu
 
 To commit:
 
-1. Select one or more visible status rows.
+1. Select one or more visible status rows, or use **Select all**.
 2. Write a commit message.
 3. Click **Commit selected**.
 

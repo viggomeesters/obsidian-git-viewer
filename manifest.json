@@ -1,7 +1,7 @@
 {
   "id": "git-viewer",
   "name": "Git Viewer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "minAppVersion": "1.5.0",
   "description": "Lightweight Git status viewer with explicit selected-file commits. No pull, clone, branch management, push, discard, or reset.",
   "author": "Viggo Meesters",

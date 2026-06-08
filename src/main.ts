@@ -311,14 +311,34 @@ class GitViewerView extends ItemView {
       text: `${selectedEntries.length} selected`,
     });
 
+    const selectionActions = actions.createDiv({ cls: "git-viewer__selection-actions" });
+    const selectAllButton = selectionActions.createEl("button", {
+      cls: "git-viewer__secondary-button",
+      text: "Select all",
+    });
+    const unselectAllButton = selectionActions.createEl("button", {
+      cls: "git-viewer__secondary-button",
+      text: "Unselect all",
+    });
+
     const commitButton = actions.createEl("button", {
       cls: "git-viewer__commit-button",
       text: this.committing ? "Committing..." : "Commit selected",
     });
 
     const updateButton = () => {
+      selectAllButton.disabled = this.committing || visibleEntries.length === 0 || selectedEntries.length === visibleEntries.length;
+      unselectAllButton.disabled = this.committing || selectedEntries.length === 0;
       commitButton.disabled = this.committing || selectedEntries.length === 0 || this.commitMessage.trim().length === 0;
     };
+    selectAllButton.addEventListener("click", () => {
+      this.selectedEntryKeys = new Set(visibleEntries.map(getEntryKey));
+      this.render();
+    });
+    unselectAllButton.addEventListener("click", () => {
+      this.selectedEntryKeys.clear();
+      this.render();
+    });
     textarea.addEventListener("input", () => {
       this.commitMessage = textarea.value;
       updateButton();

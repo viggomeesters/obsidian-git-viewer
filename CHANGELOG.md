@@ -2,6 +2,10 @@
 
 All notable changes to Git Viewer are documented here.
 
+## 0.2.1 - 2026-06-08
+
+- Add Select all and Unselect all controls to the commit panel.
+
 ## 0.2.0 - 2026-06-08
 
 - Add explicit selected-file commits from the Git Viewer sidebar.

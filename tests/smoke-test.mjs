@@ -18,6 +18,8 @@ assert.match(main, /addRibbonIcon/);
 assert.match(main, /getAbstractFileByPath/);
 assert.match(main, /getVisibleEntries/);
 assert.match(main, /hidden or internal Git path/);
+assert.match(main, /Select all/);
+assert.match(main, /Unselect all/);
 assert.match(main, /Commit selected/);
 assert.equal(main.includes("git push"), false);
 assert.equal(main.includes("git pull"), false);

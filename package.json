@@ -1,6 +1,6 @@
 {
   "name": "obsidian-git-viewer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Lightweight Git status viewer with selected-file commits for Obsidian.",
   "license": "MIT",
   "author": "Viggo Meesters",

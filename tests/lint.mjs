@@ -29,6 +29,8 @@ assert.match(main, /getRightLeaf/);
 assert.match(main, /getAbstractFileByPath/);
 assert.match(main, /getVisibleEntries/);
 assert.match(main, /hidden or internal Git path/);
+assert.match(main, /Select all/);
+assert.match(main, /Unselect all/);
 assert.match(main, /Commit selected/);
 assert.match(readme, /- pull/);
 assert.match(readme, /Commit selected files/);
