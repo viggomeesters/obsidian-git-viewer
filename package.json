@@ -16,6 +16,7 @@
   "scripts": {
     "build": "NODE_ENV=production node esbuild.config.mjs",
     "dev": "node esbuild.config.mjs",
+    "lint": "node tests/lint.mjs",
     "typecheck": "tsc --noEmit",
     "test": "node tests/git-status.test.mjs && node tests/smoke-test.mjs && node tests/headless-qa.mjs"
   },

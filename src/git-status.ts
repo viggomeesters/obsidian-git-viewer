@@ -33,13 +33,17 @@ export interface GitCommandRunner {
 
 export class CliGitCommandRunner implements GitCommandRunner {
   async run(args: string[], options: { cwd: string }): Promise<string> {
-    const { stdout } = await execFileAsync("git", args, {
-      cwd: options.cwd,
-      encoding: "buffer",
-      maxBuffer: 10 * 1024 * 1024,
-      timeout: 8000,
-    });
-    return stdout.toString("utf8");
+    try {
+      const { stdout } = await execFileAsync("git", args, {
+        cwd: options.cwd,
+        encoding: "buffer",
+        maxBuffer: 10 * 1024 * 1024,
+        timeout: 8000,
+      });
+      return stdout.toString("utf8");
+    } catch (error) {
+      throw new Error(formatGitCommandError(args, error));
+    }
   }
 }
 
@@ -134,4 +138,25 @@ function normalizeGitPath(value: string): string {
 
 function normalizeSystemPath(value: string): string {
   return value.replace(/\\/g, "/");
+}
+
+function formatGitCommandError(args: string[], error: unknown): string {
+  if (isNodeExecError(error)) {
+    const stderr = bufferOrStringToText(error.stderr).trim();
+    if (stderr) return `git ${args.join(" ")} failed: ${stderr}`;
+    if (error.code) return `git ${args.join(" ")} failed with code ${String(error.code)}`;
+  }
+  if (error instanceof Error && error.message.trim()) {
+    return `git ${args.join(" ")} failed: ${error.message}`;
+  }
+  return `git ${args.join(" ")} failed.`;
+}
+
+function isNodeExecError(error: unknown): error is { code?: unknown; stderr?: Buffer | string } {
+  return typeof error === "object" && error !== null && ("stderr" in error || "code" in error);
+}
+
+function bufferOrStringToText(value: Buffer | string | undefined): string {
+  if (!value) return "";
+  return typeof value === "string" ? value : value.toString("utf8");
 }
