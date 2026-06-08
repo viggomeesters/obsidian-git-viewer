@@ -2,13 +2,14 @@
 
 Suggested listing copy:
 
-> Lightweight Git status viewer for Obsidian with explicit selected-file commits. See changed, staged, untracked, deleted, renamed, and conflicted vault files in a compact sidebar, open files directly inside Obsidian, then commit exactly the files you selected.
+> Lightweight Git status, history, and selected-file commits for Obsidian. See changed vault files, commit exactly the paths you selected, and inspect recent commit history without leaving Obsidian.
 
 Suggested categories/topics:
 
 - Git
 - viewer
 - selected commits
+- history
 - file status
 - workflow
 

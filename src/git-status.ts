@@ -74,6 +74,25 @@ export interface GitCommitResult {
   committedPaths: string[];
 }
 
+export interface GitHistoryCommit {
+  hash: string;
+  shortHash: string;
+  author: string;
+  timestamp: string;
+  subject: string;
+}
+
+export interface GitCommitFile {
+  status: string;
+  path: string;
+  originalPath?: string;
+}
+
+export interface GitCommitDetail extends GitHistoryCommit {
+  body: string;
+  files: GitCommitFile[];
+}
+
 export async function commitSelectedEntries(
   repoRoot: string,
   entries: GitStatusEntry[],
@@ -159,6 +178,32 @@ export async function commitSelectedEntries(
   }
 }
 
+export async function getGitHistory(
+  repoRoot: string,
+  limit = 50,
+  runner: GitCommandRunner = new CliGitCommandRunner(),
+): Promise<GitHistoryCommit[]> {
+  const safeLimit = Math.max(1, Math.min(Math.trunc(limit), 50));
+  const output = await runner.run(
+    ["log", `--max-count=${safeLimit}`, "--date=iso-strict", "--format=%H%x00%h%x00%an%x00%ad%x00%s%x00"],
+    { cwd: repoRoot },
+  );
+  return parseGitLog(output);
+}
+
+export async function getGitCommitDetail(
+  repoRoot: string,
+  commitHash: string,
+  runner: GitCommandRunner = new CliGitCommandRunner(),
+): Promise<GitCommitDetail> {
+  if (!/^[0-9a-f]{7,40}$/i.test(commitHash)) throw new Error("Invalid commit hash.");
+  const output = await runner.run(
+    ["show", "--date=iso-strict", "--format=%H%x00%h%x00%an%x00%ad%x00%s%x00%b%x00", "--name-status", "-z", commitHash],
+    { cwd: repoRoot },
+  );
+  return parseGitShow(output);
+}
+
 export function parsePorcelainV1z(output: string): GitStatusEntry[] {
   const records = output.split("\0").filter((record) => record.length > 0);
   const entries: GitStatusEntry[] = [];
@@ -187,6 +232,62 @@ export function parsePorcelainV1z(output: string): GitStatusEntry[] {
   }
 
   return entries;
+}
+
+export function parseGitLog(output: string): GitHistoryCommit[] {
+  const fields = output.split("\0");
+  const commits: GitHistoryCommit[] = [];
+  for (let index = 0; index + 4 < fields.length; index += 5) {
+    const hash = fields[index]?.trim() ?? "";
+    const shortHash = fields[index + 1]?.trim() ?? "";
+    const author = fields[index + 2]?.trim() ?? "";
+    const timestamp = fields[index + 3]?.trim() ?? "";
+    const subject = fields[index + 4]?.trim() ?? "";
+    if (!hash) continue;
+    commits.push({ hash, shortHash, author, timestamp, subject });
+  }
+  return commits;
+}
+
+export function parseGitShow(output: string): GitCommitDetail {
+  const fields = output.split("\0");
+  const hash = fields[0]?.trim() ?? "";
+  const shortHash = fields[1]?.trim() ?? "";
+  const author = fields[2]?.trim() ?? "";
+  const timestamp = fields[3]?.trim() ?? "";
+  const subject = fields[4]?.trim() ?? "";
+  const body = fields[5]?.trim() ?? "";
+  if (!hash) throw new Error("Could not parse commit details.");
+
+  const files: GitCommitFile[] = [];
+  for (let index = 6; index < fields.length; index += 1) {
+    const status = fields[index]?.trim();
+    if (!status) continue;
+    const filePath = fields[index + 1] ?? "";
+    if (!filePath) continue;
+    if (status.startsWith("R") || status.startsWith("C")) {
+      const originalPath = filePath;
+      const newPath = fields[index + 2] ?? "";
+      if (newPath) {
+        files.push({
+          status,
+          path: normalizeGitPath(newPath),
+          originalPath: normalizeGitPath(originalPath),
+        });
+        index += 2;
+      } else {
+        index += 1;
+      }
+      continue;
+    }
+    files.push({
+      status,
+      path: normalizeGitPath(filePath),
+    });
+    index += 1;
+  }
+
+  return { hash, shortHash, author, timestamp, subject, body, files };
 }
 
 export function groupEntries(entries: GitStatusEntry[]): Record<GitStatusGroup, GitStatusEntry[]> {

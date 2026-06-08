@@ -22,8 +22,12 @@ await esbuild.build({
 const {
   commitSelectedEntries,
   classifyStatus,
+  getGitCommitDetail,
+  getGitHistory,
   getGitStatus,
   groupEntries,
+  parseGitLog,
+  parseGitShow,
   parsePorcelainV1z,
   toVaultRelativePath,
 } = await import(path.resolve(outfile));
@@ -73,6 +77,54 @@ assert.equal(
   toVaultRelativePath("/tmp/repo", "/tmp/repo/vault", "outside.md"),
   null,
 );
+
+const logFixture = [
+  "1111111111111111111111111111111111111111",
+  "1111111",
+  "Viggo Meesters",
+  "2026-06-08T15:43:00+02:00",
+  "add history tab",
+  "\n2222222222222222222222222222222222222222",
+  "2222222",
+  "Git Viewer",
+  "2026-06-08T14:00:00+02:00",
+  "commit selected files",
+  "",
+].join("\0");
+const logCommits = parseGitLog(logFixture);
+assert.equal(logCommits.length, 2);
+assert.deepEqual(logCommits.map((commit) => [commit.shortHash, commit.author, commit.subject]), [
+  ["1111111", "Viggo Meesters", "add history tab"],
+  ["2222222", "Git Viewer", "commit selected files"],
+]);
+
+const showFixture = [
+  "3333333333333333333333333333333333333333",
+  "3333333",
+  "Viggo Meesters",
+  "2026-06-08T16:00:00+02:00",
+  "history detail",
+  "body line",
+  "\nM",
+  "README.md",
+  "A",
+  "src/history.ts",
+  "D",
+  "old.md",
+  "R100",
+  "before.md",
+  "after.md",
+  "",
+].join("\0");
+const showDetail = parseGitShow(showFixture);
+assert.equal(showDetail.hash, "3333333333333333333333333333333333333333");
+assert.equal(showDetail.body, "body line");
+assert.deepEqual(showDetail.files, [
+  { status: "M", path: "README.md" },
+  { status: "A", path: "src/history.ts" },
+  { status: "D", path: "old.md" },
+  { status: "R100", path: "after.md", originalPath: "before.md" },
+]);
 
 const repoDir = fs.mkdtempSync(path.join(os.tmpdir(), "git-viewer-status-"));
 execFileSync("git", ["init"], { cwd: repoDir, stdio: "ignore" });
@@ -145,6 +197,23 @@ assert.equal(
     encoding: "utf8",
   }).trim(),
   "",
+);
+
+const history = await getGitHistory(commitRepo, 20);
+assert.equal(history[0].hash, commitResult.commitHash);
+assert.equal(history[0].subject, "commit selected files");
+assert.equal(history.length <= 20, true);
+
+const detail = await getGitCommitDetail(commitRepo, commitResult.commitHash);
+assert.equal(detail.hash, commitResult.commitHash);
+assert.equal(detail.subject, "commit selected files");
+assert.deepEqual(
+  detail.files.map((file) => [file.status, file.path, file.originalPath ?? null]).sort(),
+  [
+    ["A", "new-selected.md", null],
+    ["D", "delete-selected.md", null],
+    ["M", "selected.md", null],
+  ],
 );
 
 console.log("Git status parser tests passed.");

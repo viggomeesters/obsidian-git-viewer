@@ -16,6 +16,7 @@ For manual testing, copy `main.js`, `manifest.json`, and `styles.css` into `.obs
 ## Pull requests
 
 - Keep Git Viewer minimal and status-focused.
+- Keep History read-only and local-only.
 - Keep commit behavior explicit and selected-file only.
 - Do not add stage, unstage, push, pull, reset, discard, branch, merge, rebase, or clone behavior.
 - Do not add network APIs in plugin code unless the security model and README are updated.

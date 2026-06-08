@@ -1,7 +1,7 @@
 {
   "name": "obsidian-git-viewer",
-  "version": "0.2.1",
-  "description": "Lightweight Git status viewer with selected-file commits for Obsidian.",
+  "version": "0.3.0",
+  "description": "Lightweight Git status, history, and selected-file commits for Obsidian.",
   "license": "MIT",
   "author": "Viggo Meesters",
   "repository": {

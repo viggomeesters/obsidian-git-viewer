@@ -11,25 +11,28 @@
 
 # Git Viewer
 
-Git Viewer is a lightweight Git status and selected-file commit tool for Obsidian. It is built for people who want to stay inside Obsidian, see exactly which vault files changed, open those files, and make intentional commits without launching a heavier Git client or Visual Studio Code.
+Git Viewer is a lightweight Git status, history, and selected-file commit tool for Obsidian. It is built for people who want to stay inside Obsidian, see exactly which vault files changed, open those files, make intentional commits, and inspect recent commit history without launching a heavier Git client or Visual Studio Code.
 
 ![Git Viewer preview](assets/screenshot.svg)
 
 ## Features
 
 - Shows Git status in a compact Obsidian sidebar view.
+- Provides compact **Changes** and **History** tabs.
 - Groups files into Staged, Changed, Untracked, Deleted, Renamed, and Conflicted.
 - Opens files inside Obsidian when they are inside the current vault.
 - Omits hidden/internal Git paths that Obsidian cannot open as vault files.
 - Commits only explicitly selected files with a required commit message.
 - Uses a temporary Git index for commits so unrelated staged or unstaged files are not included.
+- Shows the latest 50 commits with short hash, subject, author, and timestamp.
+- Shows read-only commit details with full hash, message body, and changed files.
 - Uses local Git porcelain output through the `git` CLI.
 - Refreshes manually and after vault file events.
 - Makes no network requests from plugin code.
 
 ## Non-goals
 
-Git Viewer v0.1 deliberately does **not** include:
+Git Viewer deliberately does **not** include:
 
 - pull
 - clone
@@ -44,7 +47,7 @@ Git Viewer v0.1 deliberately does **not** include:
 - conflict resolution
 - automatic sync
 
-The plugin is a status viewer with one narrow write action: commit selected files. It does not sync, pull, push, or manage branches.
+The plugin is a status and history viewer with one narrow write action: commit selected files. It does not sync, pull, push, or manage branches.
 
 ## Roadmap
 
@@ -88,6 +91,8 @@ https://github.com/viggomeesters/obsidian-git-viewer
 
 Open the command palette and run **Open Git Viewer**, or click the Git Viewer ribbon icon. The view opens in the right sidebar.
 
+Use **Changes** to review and commit current working-tree changes. Use **History** to inspect recent local commits.
+
 Click a file path to open it in Obsidian. Deleted files and files outside the current vault cannot be opened.
 
 To commit:
@@ -97,6 +102,8 @@ To commit:
 3. Click **Commit selected**.
 
 The commit includes only the selected paths. Unselected staged files remain staged.
+
+After a commit, Git Viewer shows a **Last commit** banner with a **View in History** shortcut. History remains read-only and uses local Git data only.
 
 ## Development
 
@@ -135,9 +142,9 @@ The current release is ready for review:
 
 - root `README.md`, `LICENSE`, and `manifest.json` exist
 - `manifest.json.id` is `git-viewer`
-- `manifest.json.version` is `0.2.0`
-- `versions.json` maps `0.2.0` to Obsidian `1.5.0`
-- GitHub release `0.2.0` should include `main.js`, `manifest.json`, and `styles.css`
+- `manifest.json.version` is `0.3.0`
+- `versions.json` maps `0.3.0` to Obsidian `1.5.0`
+- GitHub release `0.3.0` should include `main.js`, `manifest.json`, and `styles.css`
 
 Official references:
 
@@ -149,7 +156,7 @@ Official references:
 
 Git Viewer runs local `git` commands against the current vault or repository. It does not make network requests and does not use clipboard APIs.
 
-The only write action is **Commit selected**. It creates a commit from explicitly selected paths through a temporary Git index, then refreshes the selected paths in the real index after the branch is advanced. It does not pull, push, clone, fetch, merge, rebase, discard, reset, or manage branches.
+History is read-only and uses local `git log` and `git show --name-status`. The only write action is **Commit selected**. It creates a commit from explicitly selected paths through a temporary Git index, then refreshes the selected paths in the real index after the branch is advanced. It does not pull, push, clone, fetch, merge, rebase, discard, reset, or manage branches.
 
 ## License
 

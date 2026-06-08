@@ -2,6 +2,14 @@
 
 All notable changes to Git Viewer are documented here.
 
+## 0.3.0 - 2026-06-08
+
+- Add Changes and History tabs.
+- Add read-only History view with the latest 50 commits.
+- Add commit details with full hash, author, timestamp, message body, and changed files.
+- Add a post-commit "View in History" shortcut for the newly created commit.
+- Keep History local-only through `git log` and `git show --name-status`.
+
 ## 0.2.1 - 2026-06-08
 
 - Add Select all and Unselect all controls to the commit panel.

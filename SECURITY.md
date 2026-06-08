@@ -16,4 +16,6 @@ Git Viewer runs local `git` commands against the current vault or repository and
 
 The plugin code does not make network requests and does not read or write the system clipboard.
 
+History is read-only. It uses local `git log` and `git show --name-status` commands to render recent commits and changed file lists.
+
 The only write action is **Commit selected**. It creates a commit from explicitly selected paths through a temporary Git index, then refreshes the selected paths in the real index after the branch is advanced. It does not run pull, clone, fetch, merge, rebase, stage, unstage, push, reset, discard, or branch management commands.

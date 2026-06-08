@@ -9,7 +9,7 @@
   <circle cx="112" cy="75" r="8" fill="#f59e0b"/>
   <circle cx="140" cy="75" r="8" fill="#22c55e"/>
   <text x="86" y="162" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="50" font-weight="850">Git Viewer</text>
-  <text x="88" y="204" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="20">Git status and selected commits for vault files</text>
+  <text x="88" y="204" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="20">Git status, history, and selected commits for vault files</text>
   <g transform="translate(88 246)">
     <rect width="112" height="34" rx="8" fill="#7c3aed"/>
     <text x="24" y="23" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">Status</text>

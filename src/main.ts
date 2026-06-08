@@ -8,16 +8,21 @@ import {
   setIcon,
 } from "obsidian";
 import {
+  GitCommitDetail,
+  GitHistoryCommit,
   GitStatusEntry,
   GitStatusGroup,
   GitStatusSnapshot,
   commitSelectedEntries,
+  getGitCommitDetail,
+  getGitHistory,
   getGitStatus,
   groupEntries,
   toVaultRelativePath,
 } from "./git-status";
 
 const VIEW_TYPE_GIT_VIEWER = "git-viewer";
+const HISTORY_LIMIT = 50;
 const GROUP_LABELS: Record<GitStatusGroup, string> = {
   staged: "Staged",
   changed: "Changed",
@@ -27,6 +32,7 @@ const GROUP_LABELS: Record<GitStatusGroup, string> = {
   conflicted: "Conflicted",
 };
 const GROUP_ORDER: GitStatusGroup[] = ["staged", "changed", "untracked", "deleted", "renamed", "conflicted"];
+type GitViewerTab = "changes" | "history";
 
 export default class GitViewerPlugin extends Plugin {
   private refreshTimer: number | null = null;
@@ -113,6 +119,15 @@ class GitViewerView extends ItemView {
   private committing = false;
   private commitMessage = "";
   private selectedEntryKeys = new Set<string>();
+  private activeTab: GitViewerTab = "changes";
+  private history: GitHistoryCommit[] = [];
+  private historyError: string | null = null;
+  private historyLoading = false;
+  private selectedCommitHash: string | null = null;
+  private commitDetail: GitCommitDetail | null = null;
+  private commitDetailError: string | null = null;
+  private commitDetailLoading = false;
+  private lastCommitHash: string | null = null;
 
   constructor(
     leaf: WorkspaceLeaf,
@@ -172,7 +187,7 @@ class GitViewerView extends ItemView {
     title.createDiv({ cls: "git-viewer__name", text: "Git Viewer" });
     title.createDiv({
       cls: "git-viewer__meta",
-      text: this.snapshot ? `${this.snapshot.branch || "detached"} - ${this.snapshot.repoRoot}` : "Read-only Git status",
+      text: this.snapshot ? `${this.snapshot.branch || "detached"} - ${this.snapshot.repoRoot}` : "Git status and history",
     });
 
     const refreshButton = header.createEl("button", {
@@ -199,13 +214,66 @@ class GitViewerView extends ItemView {
       return;
     }
 
-    if (this.snapshot.entries.length === 0) {
+    this.renderTabs(container);
+
+    if (this.activeTab === "history") {
+      this.renderHistory(container);
+      return;
+    }
+
+    this.renderChanges(container);
+  }
+
+  private renderTabs(parent: HTMLElement): void {
+    const tabs = parent.createDiv({ cls: "git-viewer__tabs" });
+    const changesButton = tabs.createEl("button", {
+      cls: `git-viewer__tab${this.activeTab === "changes" ? " git-viewer__tab--active" : ""}`,
+      text: "Changes",
+    });
+    const historyButton = tabs.createEl("button", {
+      cls: `git-viewer__tab${this.activeTab === "history" ? " git-viewer__tab--active" : ""}`,
+      text: "History",
+    });
+
+    changesButton.addEventListener("click", () => {
+      this.activeTab = "changes";
+      this.render();
+    });
+    historyButton.addEventListener("click", () => {
+      this.activeTab = "history";
+      this.render();
+      void this.loadHistory();
+    });
+  }
+
+  private renderChanges(container: HTMLElement): void {
+    const snapshot = this.snapshot;
+    if (!snapshot) return;
+
+    const lastCommitHash = this.lastCommitHash;
+    if (lastCommitHash) {
+      const banner = container.createDiv({ cls: "git-viewer__last-commit" });
+      banner.createSpan({ text: `Last commit ${lastCommitHash.slice(0, 7)}` });
+      const viewButton = banner.createEl("button", {
+        cls: "git-viewer__link-button",
+        text: "View in History",
+      });
+      viewButton.addEventListener("click", () => {
+        this.activeTab = "history";
+        this.selectedCommitHash = lastCommitHash;
+        this.render();
+        void this.loadHistory();
+        void this.loadCommitDetail(lastCommitHash);
+      });
+    }
+
+    if (snapshot.entries.length === 0) {
       renderMessage(container, "Working tree clean.");
       return;
     }
 
-    const visibleEntries = this.getVisibleEntries(this.snapshot.entries);
-    const hiddenCount = this.snapshot.entries.length - visibleEntries.length;
+    const visibleEntries = this.getVisibleEntries(snapshot.entries);
+    const hiddenCount = snapshot.entries.length - visibleEntries.length;
     if (visibleEntries.length === 0) {
       renderMessage(
         container,
@@ -232,6 +300,107 @@ class GitViewerView extends ItemView {
       const entries = grouped[group];
       if (entries.length === 0) continue;
       this.renderGroup(sections, group, entries);
+    }
+  }
+
+  private renderHistory(parent: HTMLElement): void {
+    if (this.historyLoading) {
+      renderMessage(parent, "Reading Git history...");
+      return;
+    }
+
+    if (this.historyError) {
+      renderMessage(parent, this.historyError);
+      return;
+    }
+
+    if (this.history.length === 0) {
+      renderMessage(parent, "No commit history found.");
+      if (this.snapshot && !this.historyLoading) {
+        void this.loadHistory();
+      }
+      return;
+    }
+
+    const historyLayout = parent.createDiv({ cls: "git-viewer__history-layout" });
+    const list = historyLayout.createDiv({ cls: "git-viewer__history-list" });
+    for (const commit of this.history) {
+      const item = list.createEl("button", {
+        cls: `git-viewer__history-item${commit.hash === this.selectedCommitHash ? " git-viewer__history-item--active" : ""}`,
+      });
+      item.createSpan({ cls: "git-viewer__history-hash", text: commit.shortHash });
+      const labels = item.createSpan({ cls: "git-viewer__history-labels" });
+      labels.createSpan({ cls: "git-viewer__history-subject", text: commit.subject || "(no subject)" });
+      labels.createSpan({ cls: "git-viewer__history-meta", text: `${commit.author} - ${formatTimestamp(commit.timestamp)}` });
+      item.addEventListener("click", () => {
+        this.selectedCommitHash = commit.hash;
+        this.render();
+        void this.loadCommitDetail(commit.hash);
+      });
+    }
+
+    const detailPanel = historyLayout.createDiv({ cls: "git-viewer__commit-detail" });
+    this.renderCommitDetail(detailPanel);
+  }
+
+  private renderCommitDetail(parent: HTMLElement): void {
+    if (!this.selectedCommitHash) {
+      parent.createDiv({ cls: "git-viewer__commit-detail-empty", text: "Select a commit to view changed files." });
+      return;
+    }
+
+    if (this.commitDetailLoading) {
+      parent.createDiv({ cls: "git-viewer__commit-detail-empty", text: "Reading commit..." });
+      return;
+    }
+
+    if (this.commitDetailError) {
+      parent.createDiv({ cls: "git-viewer__commit-detail-empty", text: this.commitDetailError });
+      return;
+    }
+
+    if (!this.commitDetail || this.commitDetail.hash !== this.selectedCommitHash) {
+      parent.createDiv({ cls: "git-viewer__commit-detail-empty", text: "Select a commit to load details." });
+      void this.loadCommitDetail(this.selectedCommitHash);
+      return;
+    }
+
+    parent.createDiv({ cls: "git-viewer__commit-detail-subject", text: this.commitDetail.subject || "(no subject)" });
+    parent.createDiv({ cls: "git-viewer__commit-detail-meta", text: this.commitDetail.hash });
+    parent.createDiv({ cls: "git-viewer__commit-detail-meta", text: `${this.commitDetail.author} - ${formatTimestamp(this.commitDetail.timestamp)}` });
+
+    if (this.commitDetail.body) {
+      parent.createDiv({ cls: "git-viewer__commit-body", text: this.commitDetail.body });
+    }
+
+    const files = parent.createDiv({ cls: "git-viewer__commit-files" });
+    const heading = files.createDiv({ cls: "git-viewer__section-heading" });
+    heading.createSpan({ text: "Changed files" });
+    heading.createSpan({ cls: "git-viewer__count", text: String(this.commitDetail.files.length) });
+
+    const list = files.createDiv({ cls: "git-viewer__list" });
+    for (const file of this.commitDetail.files) {
+      const item = list.createDiv({ cls: "git-viewer__commit-file" });
+      item.createSpan({ cls: "git-viewer__history-file-status", text: file.status });
+      const openButton = item.createEl("button", { cls: "git-viewer__file-button" });
+      const openableFile = this.getOpenableHistoryFile(file.path);
+      if (!(openableFile instanceof TFile)) {
+        openButton.addClass("git-viewer__file-button--disabled");
+        openButton.disabled = true;
+      }
+      const labels = openButton.createSpan({ cls: "git-viewer__item-labels" });
+      labels.createSpan({ cls: "git-viewer__path", text: file.path });
+      if (file.originalPath) {
+        labels.createSpan({ cls: "git-viewer__subpath", text: `from ${file.originalPath}` });
+      }
+      if (!(openableFile instanceof TFile)) {
+        labels.createSpan({ cls: "git-viewer__subpath", text: "not available in Obsidian" });
+      }
+      openButton.addEventListener("click", () => {
+        if (openableFile instanceof TFile) {
+          void this.app.workspace.getLeaf(false).openFile(openableFile);
+        }
+      });
     }
   }
 
@@ -405,6 +574,10 @@ class GitViewerView extends ItemView {
       const result = await commitSelectedEntries(snapshot.repoRoot, selectedEntries, this.commitMessage);
       this.selectedEntryKeys.clear();
       this.commitMessage = "";
+      this.lastCommitHash = result.commitHash;
+      this.selectedCommitHash = result.commitHash;
+      this.history = [];
+      this.commitDetail = null;
       new Notice(`Committed ${result.committedPaths.length} file${result.committedPaths.length === 1 ? "" : "s"}: ${result.commitHash.slice(0, 7)}`);
       await this.refresh();
     } catch (error) {
@@ -413,6 +586,63 @@ class GitViewerView extends ItemView {
       this.committing = false;
       this.render();
     }
+  }
+
+  private async loadHistory(): Promise<void> {
+    if (!this.snapshot || this.historyLoading) return;
+
+    this.historyLoading = true;
+    this.historyError = null;
+    this.render();
+
+    try {
+      this.history = await getGitHistory(this.snapshot.repoRoot, HISTORY_LIMIT);
+      this.historyError = null;
+      if (!this.selectedCommitHash && this.history.length > 0) {
+        this.selectedCommitHash = this.history[0].hash;
+      }
+      if (this.selectedCommitHash) {
+        await this.loadCommitDetail(this.selectedCommitHash, false);
+      }
+    } catch (error) {
+      this.history = [];
+      this.historyError = getErrorMessage(error);
+    } finally {
+      this.historyLoading = false;
+      this.render();
+    }
+  }
+
+  private async loadCommitDetail(commitHash: string | null, rerender = true): Promise<void> {
+    if (!this.snapshot || !commitHash || this.commitDetailLoading) return;
+    if (this.commitDetail?.hash === commitHash) return;
+
+    this.commitDetailLoading = true;
+    this.commitDetailError = null;
+    if (rerender) this.render();
+
+    try {
+      this.commitDetail = await getGitCommitDetail(this.snapshot.repoRoot, commitHash);
+      this.commitDetailError = null;
+    } catch (error) {
+      this.commitDetail = null;
+      this.commitDetailError = getErrorMessage(error);
+    } finally {
+      this.commitDetailLoading = false;
+      if (rerender) this.render();
+    }
+  }
+
+  private getOpenableHistoryFile(gitPath: string): TFile | null {
+    const snapshot = this.snapshot;
+    const vaultPath = this.plugin.getVaultBasePath();
+    if (!snapshot || !vaultPath) return null;
+
+    const vaultRelativePath = toVaultRelativePath(snapshot.repoRoot, vaultPath, gitPath);
+    if (!vaultRelativePath) return null;
+
+    const file = this.app.vault.getAbstractFileByPath(vaultRelativePath);
+    return file instanceof TFile ? file : null;
   }
 }
 
@@ -427,4 +657,16 @@ function getErrorMessage(error: unknown): string {
 
 function getEntryKey(entry: GitStatusEntry): string {
   return `${entry.indexStatus}${entry.worktreeStatus}\0${entry.path}\0${entry.originalPath ?? ""}`;
+}
+
+function formatTimestamp(timestamp: string): string {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return timestamp;
+  return date.toLocaleString(undefined, {
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 }

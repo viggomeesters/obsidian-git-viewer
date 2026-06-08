@@ -53,6 +53,30 @@
   overflow: auto;
 }
 
+.git-viewer__tabs {
+  background: var(--background-secondary);
+  border: 1px solid var(--git-viewer-border);
+  border-radius: 6px;
+  display: grid;
+  flex: 0 0 auto;
+  gap: 2px;
+  grid-template-columns: 1fr 1fr;
+  padding: 2px;
+}
+
+.git-viewer__tab {
+  border: 0;
+  border-radius: 4px;
+  font-size: 0.82em;
+  min-height: 28px;
+}
+
+.git-viewer__tab--active {
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-weight: 700;
+}
+
 .git-viewer__note {
   border: 1px solid var(--git-viewer-border);
   border-radius: 6px;
@@ -60,6 +84,29 @@
   flex: 0 0 auto;
   font-size: 0.8em;
   padding: 8px 10px;
+}
+
+.git-viewer__last-commit {
+  align-items: center;
+  border: 1px solid var(--git-viewer-border);
+  border-radius: 6px;
+  color: var(--git-viewer-muted);
+  display: flex;
+  flex: 0 0 auto;
+  font-family: var(--git-viewer-code);
+  font-size: 0.78em;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 8px 10px;
+}
+
+.git-viewer__link-button {
+  background: transparent;
+  border: 0;
+  color: var(--text-accent);
+  flex: 0 0 auto;
+  font-size: 1em;
+  padding: 0;
 }
 
 .git-viewer__commit-panel {
@@ -255,6 +302,144 @@
 .git-viewer__subpath {
   color: var(--git-viewer-muted);
   font-size: 0.75em;
+}
+
+.git-viewer__history-layout {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.git-viewer__history-list {
+  border: 1px solid var(--git-viewer-border);
+  border-radius: 6px;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.git-viewer__history-item {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--git-viewer-border);
+  color: var(--text-normal);
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 44px;
+  padding: 8px 9px;
+  text-align: left;
+  width: 100%;
+}
+
+.git-viewer__history-item:last-child {
+  border-bottom: 0;
+}
+
+.git-viewer__history-item:hover,
+.git-viewer__history-item:focus-visible,
+.git-viewer__history-item--active {
+  background: var(--background-modifier-hover);
+}
+
+.git-viewer__history-hash,
+.git-viewer__history-file-status {
+  border-radius: 4px;
+  font-family: var(--git-viewer-code);
+  font-size: 0.74em;
+  font-weight: 700;
+  min-width: 4.8em;
+  padding: 2px 5px;
+  text-align: center;
+}
+
+.git-viewer__history-hash {
+  background: color-mix(in srgb, var(--interactive-accent) 18%, transparent);
+  color: var(--text-normal);
+}
+
+.git-viewer__history-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.git-viewer__history-subject {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.git-viewer__history-meta,
+.git-viewer__commit-detail-meta {
+  color: var(--git-viewer-muted);
+  font-family: var(--git-viewer-code);
+  font-size: 0.74em;
+  overflow-wrap: anywhere;
+}
+
+.git-viewer__commit-detail {
+  border: 1px solid var(--git-viewer-border);
+  border-radius: 6px;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+}
+
+.git-viewer__commit-detail-empty {
+  color: var(--git-viewer-muted);
+  font-style: italic;
+  min-height: 60px;
+  padding: 12px 0;
+  text-align: center;
+}
+
+.git-viewer__commit-detail-subject {
+  font-size: 0.95em;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.git-viewer__commit-body {
+  border-left: 2px solid var(--git-viewer-border);
+  color: var(--text-muted);
+  font-size: 0.82em;
+  padding-left: 8px;
+  white-space: pre-wrap;
+}
+
+.git-viewer__commit-files {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.git-viewer__commit-file {
+  align-items: center;
+  border-bottom: 1px solid var(--git-viewer-border);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 36px;
+  padding: 7px 9px;
+}
+
+.git-viewer__commit-file:last-child {
+  border-bottom: 0;
+}
+
+.git-viewer__history-file-status {
+  background: var(--background-secondary);
+  border: 1px solid var(--git-viewer-border);
+  min-width: 3em;
 }
 
 .git-viewer__message {
