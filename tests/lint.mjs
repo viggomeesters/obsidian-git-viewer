@@ -3,6 +3,7 @@ import fs from "node:fs";
 
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const manifest = JSON.parse(fs.readFileSync("manifest.json", "utf8"));
+const versions = JSON.parse(fs.readFileSync("versions.json", "utf8"));
 const readme = fs.readFileSync("README.md", "utf8");
 const main = fs.readFileSync("src/main.ts", "utf8");
 const gitStatus = fs.readFileSync("src/git-status.ts", "utf8");
@@ -14,6 +15,8 @@ assert.equal(packageJson.scripts.lint, "node tests/lint.mjs");
 assert.equal(manifest.id, "git-viewer");
 assert.equal(manifest.isDesktopOnly, true);
 assert.match(manifest.description, /read-only/i);
+assert.match(manifest.version, /^\d+\.\d+\.\d+$/);
+assert.equal(versions[manifest.version], manifest.minAppVersion);
 assert.match(gitStatus, /status", "--porcelain=v1", "-z", "--untracked-files=all"/);
 assert.match(gitStatus, /formatGitCommandError/);
 assert.match(main, /registerView/);

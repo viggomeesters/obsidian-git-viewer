@@ -1,0 +1,41 @@
+<svg width="1200" height="780" viewBox="0 0 1200 780" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Git Viewer preview</title>
+  <desc id="desc">A preview of the Git Viewer sidebar inside Obsidian.</desc>
+  <rect width="1200" height="780" fill="#171A21"/>
+  <rect x="60" y="56" width="1080" height="668" rx="20" fill="#20242D" stroke="#343B49" stroke-width="2"/>
+  <rect x="60" y="56" width="1080" height="56" rx="20" fill="#292E3A"/>
+  <rect x="60" y="92" width="1080" height="20" fill="#292E3A"/>
+  <circle cx="96" cy="84" r="8" fill="#EF4444"/>
+  <circle cx="124" cy="84" r="8" fill="#F59E0B"/>
+  <circle cx="152" cy="84" r="8" fill="#10B981"/>
+  <rect x="88" y="142" width="742" height="552" rx="12" fill="#151820" stroke="#303642"/>
+  <rect x="858" y="142" width="254" height="552" rx="12" fill="#151820" stroke="#303642"/>
+  <text x="120" y="198" fill="#E2E8F0" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800">Notes stay open</text>
+  <text x="120" y="244" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="20">The Git status lives in the right sidebar.</text>
+  <rect x="120" y="302" width="520" height="24" rx="5" fill="#2C3340"/>
+  <rect x="120" y="348" width="610" height="20" rx="5" fill="#242A35"/>
+  <rect x="120" y="386" width="560" height="20" rx="5" fill="#242A35"/>
+  <rect x="120" y="424" width="640" height="20" rx="5" fill="#242A35"/>
+  <text x="884" y="186" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700">Git Viewer</text>
+  <text x="884" y="212" fill="#94A3B8" font-family="SFMono-Regular, Menlo, monospace" font-size="12">main - vault</text>
+  <line x1="884" y1="236" x2="1086" y2="236" stroke="#343B49"/>
+  <text x="884" y="268" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">STAGED</text>
+  <rect x="884" y="282" width="202" height="38" rx="6" fill="#111318" stroke="#303642"/>
+  <text x="900" y="306" fill="#BBF7D0" font-family="SFMono-Regular, Menlo, monospace" font-size="12">M</text>
+  <text x="936" y="306" fill="#E2E8F0" font-family="SFMono-Regular, Menlo, monospace" font-size="12">README.md</text>
+  <text x="884" y="360" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">CHANGED</text>
+  <rect x="884" y="374" width="202" height="38" rx="6" fill="#111318" stroke="#303642"/>
+  <text x="900" y="398" fill="#FDE68A" font-family="SFMono-Regular, Menlo, monospace" font-size="12">M</text>
+  <text x="936" y="398" fill="#E2E8F0" font-family="SFMono-Regular, Menlo, monospace" font-size="12">notes/today.md</text>
+  <text x="884" y="452" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">UNTRACKED</text>
+  <rect x="884" y="466" width="202" height="38" rx="6" fill="#111318" stroke="#303642"/>
+  <text x="900" y="490" fill="#BAE6FD" font-family="SFMono-Regular, Menlo, monospace" font-size="12">??</text>
+  <text x="936" y="490" fill="#E2E8F0" font-family="SFMono-Regular, Menlo, monospace" font-size="12">ideas/git.md</text>
+  <rect x="884" y="512" width="202" height="38" rx="6" fill="#111318" stroke="#303642"/>
+  <text x="900" y="536" fill="#BAE6FD" font-family="SFMono-Regular, Menlo, monospace" font-size="12">??</text>
+  <text x="936" y="536" fill="#E2E8F0" font-family="SFMono-Regular, Menlo, monospace" font-size="12">data/export.json</text>
+  <text x="884" y="590" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">DELETED</text>
+  <rect x="884" y="604" width="202" height="38" rx="6" fill="#111318" stroke="#303642"/>
+  <text x="900" y="628" fill="#FCA5A5" font-family="SFMono-Regular, Menlo, monospace" font-size="12">D</text>
+  <text x="936" y="628" fill="#E2E8F0" font-family="SFMono-Regular, Menlo, monospace" font-size="12">old-note.md</text>
+</svg>
