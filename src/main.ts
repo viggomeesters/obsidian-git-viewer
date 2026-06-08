@@ -12,6 +12,7 @@ import {
   GitStatusGroup,
   GitStatusSnapshot,
   getGitStatus,
+  groupEntries,
   toVaultRelativePath,
 } from "./git-status";
 
@@ -199,9 +200,29 @@ class GitViewerView extends ItemView {
       return;
     }
 
+    const visibleEntries = this.getVisibleEntries(this.snapshot.entries);
+    const hiddenCount = this.snapshot.entries.length - visibleEntries.length;
+    if (visibleEntries.length === 0) {
+      renderMessage(
+        container,
+        hiddenCount > 0
+          ? `No openable vault file changes. ${hiddenCount} hidden or internal Git path${hiddenCount === 1 ? "" : "s"} omitted.`
+          : "No openable vault file changes.",
+      );
+      return;
+    }
+
+    if (hiddenCount > 0) {
+      container.createDiv({
+        cls: "git-viewer__note",
+        text: `${hiddenCount} hidden or internal Git path${hiddenCount === 1 ? "" : "s"} omitted.`,
+      });
+    }
+
+    const grouped = groupEntries(visibleEntries);
     const sections = container.createDiv({ cls: "git-viewer__sections" });
     for (const group of GROUP_ORDER) {
-      const entries = this.snapshot.grouped[group];
+      const entries = grouped[group];
       if (entries.length === 0) continue;
       this.renderGroup(sections, group, entries);
     }
@@ -216,11 +237,20 @@ class GitViewerView extends ItemView {
     const list = section.createDiv({ cls: "git-viewer__list" });
     for (const entry of entries) {
       const item = list.createEl("button", { cls: "git-viewer__item" });
+      const file = this.getOpenableFile(entry);
+      const isOpenable = file instanceof TFile;
+      if (!isOpenable) {
+        item.addClass("git-viewer__item--disabled");
+        item.disabled = true;
+      }
       item.createSpan({ cls: `git-viewer__badge git-viewer__badge--${group}`, text: `${entry.indexStatus}${entry.worktreeStatus}` });
       const labels = item.createSpan({ cls: "git-viewer__item-labels" });
       labels.createSpan({ cls: "git-viewer__path", text: entry.path });
       if (entry.originalPath) {
         labels.createSpan({ cls: "git-viewer__subpath", text: `from ${entry.originalPath}` });
+      }
+      if (!isOpenable) {
+        labels.createSpan({ cls: "git-viewer__subpath", text: "not available in Obsidian" });
       }
       item.addEventListener("click", () => {
         void this.openEntry(entry);
@@ -229,23 +259,29 @@ class GitViewerView extends ItemView {
   }
 
   private async openEntry(entry: GitStatusEntry): Promise<void> {
-    const snapshot = this.snapshot;
-    const vaultPath = this.plugin.getVaultBasePath();
-    if (!snapshot || !vaultPath) return;
-
-    const vaultRelativePath = toVaultRelativePath(snapshot.repoRoot, vaultPath, entry.path);
-    if (!vaultRelativePath) {
-      new Notice("This Git path is outside the current vault.");
-      return;
-    }
-
-    const file = this.app.vault.getAbstractFileByPath(vaultRelativePath);
+    const file = this.getOpenableFile(entry);
     if (!(file instanceof TFile)) {
-      new Notice("This file is not available in the vault.");
+      new Notice("This file cannot be opened in Obsidian.");
       return;
     }
 
     await this.app.workspace.getLeaf(false).openFile(file);
+  }
+
+  private getVisibleEntries(entries: GitStatusEntry[]): GitStatusEntry[] {
+    return entries.filter((entry) => entry.group === "deleted" || this.getOpenableFile(entry) instanceof TFile);
+  }
+
+  private getOpenableFile(entry: GitStatusEntry): TFile | null {
+    const snapshot = this.snapshot;
+    const vaultPath = this.plugin.getVaultBasePath();
+    if (!snapshot || !vaultPath) return null;
+
+    const vaultRelativePath = toVaultRelativePath(snapshot.repoRoot, vaultPath, entry.path);
+    if (!vaultRelativePath) return null;
+
+    const file = this.app.vault.getAbstractFileByPath(vaultRelativePath);
+    return file instanceof TFile ? file : null;
   }
 }
 

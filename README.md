@@ -20,6 +20,7 @@ Git Viewer is a lightweight read-only Git status viewer for Obsidian. It is buil
 - Shows Git status in a compact Obsidian sidebar view.
 - Groups files into Staged, Changed, Untracked, Deleted, Renamed, and Conflicted.
 - Opens files inside Obsidian when they are inside the current vault.
+- Omits hidden/internal Git paths that Obsidian cannot open as vault files.
 - Uses local Git porcelain output through the `git` CLI.
 - Refreshes manually and after vault file events.
 - Stays read-only in v0.1.
@@ -58,18 +59,6 @@ Commit support should be scoped and explicit:
 - never accidentally include unrelated staged or unstaged files
 
 It should not use a naive `git add <files> && git commit` flow by default, because that can disturb existing staged state in busy vaults.
-
-### v0.3: Push current branch
-
-Push support should remain narrow:
-
-- push only the current branch
-- require an upstream
-- no pull
-- no force
-- no branch management
-- no credential UI
-- show compact errors when Git rejects the push
 
 ## Installation
 
@@ -138,9 +127,9 @@ The current release is ready for review:
 
 - root `README.md`, `LICENSE`, and `manifest.json` exist
 - `manifest.json.id` is `git-viewer`
-- `manifest.json.version` is `0.1.0`
-- `versions.json` maps `0.1.0` to Obsidian `1.5.0`
-- GitHub release `0.1.0` should include `main.js`, `manifest.json`, and `styles.css`
+- `manifest.json.version` is `0.1.1`
+- `versions.json` maps `0.1.1` to Obsidian `1.5.0`
+- GitHub release `0.1.1` should include `main.js`, `manifest.json`, and `styles.css`
 
 Official references:
 

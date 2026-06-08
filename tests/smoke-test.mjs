@@ -14,6 +14,8 @@ assert.match(gitStatus, /status", "--porcelain=v1", "-z", "--untracked-files=all
 assert.match(main, /registerView/);
 assert.match(main, /addRibbonIcon/);
 assert.match(main, /getAbstractFileByPath/);
+assert.match(main, /getVisibleEntries/);
+assert.match(main, /hidden or internal Git path/);
 assert.equal(main.includes("git commit"), false);
 assert.equal(main.includes("git push"), false);
 assert.equal(main.includes("git pull"), false);

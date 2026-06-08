@@ -2,6 +2,12 @@
 
 All notable changes to Git Viewer are documented here.
 
+## 0.1.1 - 2026-06-08
+
+- Hide hidden/internal Git paths that Obsidian cannot open as vault files.
+- Keep deleted status entries visible but disabled instead of showing repeated unavailable-file notices.
+- Remove push from the near-term roadmap.
+
 ## 0.1.0 - 2026-06-08
 
 - Initial public release.
