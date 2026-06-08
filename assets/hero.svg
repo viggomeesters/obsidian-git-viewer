@@ -1,35 +1,35 @@
-<svg width="1600" height="640" viewBox="0 0 1600 640" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<svg width="1400" height="420" viewBox="0 0 1400 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Git Viewer for Obsidian</title>
-  <desc id="desc">A compact Obsidian sidebar showing local Git status groups.</desc>
-  <rect width="1600" height="640" rx="0" fill="#111318"/>
-  <rect x="92" y="76" width="1416" height="488" rx="26" fill="#181B22" stroke="#303642" stroke-width="2"/>
-  <rect x="92" y="76" width="1416" height="68" rx="26" fill="#222633"/>
-  <rect x="92" y="118" width="1416" height="26" fill="#222633"/>
-  <circle cx="136" cy="111" r="10" fill="#EF4444"/>
-  <circle cx="170" cy="111" r="10" fill="#F59E0B"/>
-  <circle cx="204" cy="111" r="10" fill="#10B981"/>
-  <rect x="128" y="186" width="280" height="330" rx="14" fill="#12151B" stroke="#2B313B"/>
-  <rect x="448" y="186" width="452" height="330" rx="14" fill="#12151B" stroke="#2B313B"/>
-  <rect x="940" y="186" width="432" height="330" rx="14" fill="#12151B" stroke="#2B313B"/>
-  <text x="128" y="152" fill="#C7D2FE" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">Git Viewer</text>
-  <text x="128" y="236" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800">Stay in Obsidian.</text>
-  <text x="128" y="304" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800">See what changed.</text>
-  <text x="128" y="362" fill="#CBD5E1" font-family="Inter, Arial, sans-serif" font-size="28">A minimal read-only Git status viewer for vault files.</text>
-  <text x="128" y="410" fill="#CBD5E1" font-family="Inter, Arial, sans-serif" font-size="28">No pull. No clone. No background sync.</text>
-  <g transform="translate(970 222)">
-    <rect width="356" height="258" rx="14" fill="#1A1E27" stroke="#343B49"/>
-    <text x="22" y="42" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">Git Viewer</text>
-    <text x="22" y="72" fill="#94A3B8" font-family="SFMono-Regular, Menlo, monospace" font-size="15">main - vault</text>
-    <line x1="22" y1="94" x2="334" y2="94" stroke="#343B49"/>
-    <text x="22" y="128" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">CHANGED</text>
-    <rect x="22" y="144" width="312" height="42" rx="7" fill="#111318" stroke="#303642"/>
-    <rect x="36" y="157" width="38" height="18" rx="4" fill="#5B4A18"/>
-    <text x="44" y="171" fill="#FDE68A" font-family="SFMono-Regular, Menlo, monospace" font-size="12"> M</text>
-    <text x="90" y="171" fill="#E2E8F0" font-family="SFMono-Regular, Menlo, monospace" font-size="14">notes/daily.md</text>
-    <text x="22" y="212" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">UNTRACKED</text>
-    <rect x="22" y="228" width="312" height="42" rx="7" fill="#111318" stroke="#303642"/>
-    <rect x="36" y="241" width="38" height="18" rx="4" fill="#123E52"/>
-    <text x="44" y="255" fill="#BAE6FD" font-family="SFMono-Regular, Menlo, monospace" font-size="12">??</text>
-    <text x="90" y="255" fill="#E2E8F0" font-family="SFMono-Regular, Menlo, monospace" font-size="14">ideas/git.md</text>
+  <desc id="desc">A straight compact status hero for local Git status groups.</desc>
+  <rect width="1400" height="420" fill="#111318"/>
+  <rect x="48" y="48" width="1304" height="324" rx="18" fill="#181b22" stroke="#303642"/>
+  <rect x="48" y="48" width="1304" height="54" rx="18" fill="#222633"/>
+  <rect x="48" y="82" width="1304" height="20" fill="#222633"/>
+  <circle cx="84" cy="75" r="8" fill="#ef4444"/>
+  <circle cx="112" cy="75" r="8" fill="#f59e0b"/>
+  <circle cx="140" cy="75" r="8" fill="#22c55e"/>
+  <text x="86" y="162" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="50" font-weight="850">Git Viewer</text>
+  <text x="88" y="204" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="20">Read-only Git status for vault files</text>
+  <g transform="translate(88 246)">
+    <rect width="112" height="34" rx="8" fill="#7c3aed"/>
+    <text x="24" y="23" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">Status</text>
+    <rect x="124" width="118" height="34" rx="8" fill="#1f2937" stroke="#303642"/>
+    <text x="148" y="23" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">Refresh</text>
+    <rect x="254" width="178" height="34" rx="8" fill="#3a1616" stroke="#7f1d1d"/>
+    <text x="278" y="23" fill="#fecaca" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">No write actions</text>
+  </g>
+  <g transform="translate(782 112)">
+    <rect width="490" height="240" rx="14" fill="#111318" stroke="#343b49"/>
+    <text x="28" y="48" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">main</text>
+    <text x="390" y="48" fill="#94a3b8" font-family="Menlo, Consolas, monospace" font-size="14">vault</text>
+    <line x1="28" y1="70" x2="462" y2="70" stroke="#343b49"/>
+    <text x="28" y="108" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800">CHANGED</text>
+    <rect x="28" y="124" width="434" height="42" rx="8" fill="#1a1e27" stroke="#303642"/>
+    <text x="48" y="150" fill="#fde68a" font-family="Menlo, Consolas, monospace" font-size="14">M</text>
+    <text x="92" y="150" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="14">10_notes/daily.md</text>
+    <text x="28" y="202" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800">UNTRACKED</text>
+    <rect x="28" y="218" width="434" height="42" rx="8" fill="#1a1e27" stroke="#303642"/>
+    <text x="48" y="244" fill="#bae6fd" font-family="Menlo, Consolas, monospace" font-size="14">??</text>
+    <text x="92" y="244" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="14">ideas/git-viewer.md</text>
   </g>
 </svg>

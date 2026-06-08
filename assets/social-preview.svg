@@ -2,21 +2,17 @@
   <title id="title">Git Viewer</title>
   <desc id="desc">A social preview image for Git Viewer.</desc>
   <rect width="1280" height="640" fill="#111318"/>
-  <rect x="88" y="84" width="1104" height="472" rx="30" fill="#1B1F28" stroke="#343B49" stroke-width="2"/>
-  <text x="132" y="192" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="92" font-weight="800">Git Viewer</text>
-  <text x="136" y="260" fill="#CBD5E1" font-family="Inter, Arial, sans-serif" font-size="34">Minimal read-only Git status inside Obsidian.</text>
-  <g transform="translate(800 158)">
-    <rect width="300" height="306" rx="18" fill="#111318" stroke="#303642"/>
-    <text x="28" y="50" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">main</text>
-    <line x1="28" y1="74" x2="272" y2="74" stroke="#343B49"/>
-    <rect x="28" y="104" width="244" height="42" rx="7" fill="#1A1E27" stroke="#303642"/>
-    <text x="46" y="130" fill="#BBF7D0" font-family="SFMono-Regular, Menlo, monospace" font-size="14">M</text>
-    <text x="86" y="130" fill="#E2E8F0" font-family="SFMono-Regular, Menlo, monospace" font-size="14">README.md</text>
-    <rect x="28" y="162" width="244" height="42" rx="7" fill="#1A1E27" stroke="#303642"/>
-    <text x="46" y="188" fill="#FDE68A" font-family="SFMono-Regular, Menlo, monospace" font-size="14">M</text>
-    <text x="86" y="188" fill="#E2E8F0" font-family="SFMono-Regular, Menlo, monospace" font-size="14">daily.md</text>
-    <rect x="28" y="220" width="244" height="42" rx="7" fill="#1A1E27" stroke="#303642"/>
-    <text x="46" y="246" fill="#BAE6FD" font-family="SFMono-Regular, Menlo, monospace" font-size="14">??</text>
-    <text x="86" y="246" fill="#E2E8F0" font-family="SFMono-Regular, Menlo, monospace" font-size="14">idea.md</text>
+  <rect x="72" y="72" width="1136" height="496" rx="28" fill="#1b1f28" stroke="#343b49" stroke-width="2"/>
+  <text x="128" y="184" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="900">Git Viewer</text>
+  <text x="132" y="240" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="30">Read-only Git status inside your vault.</text>
+  <g transform="translate(132 318)">
+    <rect width="1016" height="148" rx="18" fill="#111318" stroke="#303642" stroke-width="2"/>
+    <text x="34" y="58" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">CHANGED</text>
+    <text x="178" y="58" fill="#fde68a" font-family="Menlo, Consolas, monospace" font-size="22">M</text>
+    <text x="232" y="58" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">10_notes/daily.md</text>
+    <text x="34" y="108" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">UNTRACKED</text>
+    <text x="178" y="108" fill="#bae6fd" font-family="Menlo, Consolas, monospace" font-size="22">??</text>
+    <text x="232" y="108" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">ideas/git-viewer.md</text>
   </g>
+  <text x="132" y="520" fill="#a78bfa" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">git-viewer</text>
 </svg>
