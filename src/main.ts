@@ -48,16 +48,16 @@ export default class GitViewerPlugin extends Plugin {
     });
 
     this.addCommand({
-      id: "open-git-viewer",
-      name: "Open Git Viewer",
+      id: "open",
+      name: "Open",
       callback: () => {
         void this.openView();
       },
     });
 
     this.addCommand({
-      id: "refresh-git-viewer",
-      name: "Refresh Git Viewer",
+      id: "refresh",
+      name: "Refresh",
       callback: () => {
         void this.refreshOpenViews();
       },
@@ -79,7 +79,7 @@ export default class GitViewerPlugin extends Plugin {
   async openView(): Promise<void> {
     const leaf = this.app.workspace.getRightLeaf(false) ?? this.app.workspace.getLeaf(true);
     await leaf.setViewState({ type: VIEW_TYPE_GIT_VIEWER, active: true });
-    this.app.workspace.revealLeaf(leaf);
+    await this.app.workspace.revealLeaf(leaf);
   }
 
   getVaultBasePath(): string | null {
@@ -423,7 +423,7 @@ class GitViewerView extends ItemView {
           "aria-label": `Select ${entry.path} for commit`,
           type: "checkbox",
         },
-      }) as HTMLInputElement;
+      });
       checkbox.checked = this.selectedEntryKeys.has(entryKey);
       checkbox.disabled = this.committing;
       checkbox.addEventListener("change", () => {
@@ -470,7 +470,7 @@ class GitViewerView extends ItemView {
         placeholder: "Commit message",
         rows: "3",
       },
-    }) as HTMLTextAreaElement;
+    });
     textarea.value = this.commitMessage;
     textarea.disabled = this.committing;
 

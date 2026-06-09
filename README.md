@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/viggomeesters/obsidian-git-viewer/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/viggomeesters/obsidian-git-viewer?style=flat-square"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-green?style=flat-square"></a>
-  <img alt="Obsidian 1.5.0+" src="https://img.shields.io/badge/Obsidian-1.5.0%2B-7c3aed?style=flat-square">
+  <img alt="Obsidian 1.8.7+" src="https://img.shields.io/badge/Obsidian-1.8.7%2B-7c3aed?style=flat-square">
   <img alt="No push" src="https://img.shields.io/badge/push-not%20included-0f766e?style=flat-square">
 </p>
 
@@ -89,7 +89,7 @@ https://github.com/viggomeesters/obsidian-git-viewer
 
 ## Usage
 
-Open the command palette and run **Open Git Viewer**, or click the Git Viewer ribbon icon. The view opens in the right sidebar.
+Open the command palette and run **Git Viewer: Open**, or click the Git Viewer ribbon icon. The view opens in the right sidebar.
 
 Use **Changes** to review and commit current working-tree changes. Use **History** to inspect recent local commits.
 
@@ -142,9 +142,9 @@ The current release is ready for review:
 
 - root `README.md`, `LICENSE`, and `manifest.json` exist
 - `manifest.json.id` is `git-viewer`
-- `manifest.json.version` is `0.3.0`
-- `versions.json` maps `0.3.0` to Obsidian `1.5.0`
-- GitHub release `0.3.0` should include `main.js`, `manifest.json`, and `styles.css`
+- `manifest.json.version` is `0.3.1`
+- `versions.json` maps `0.3.1` to Obsidian `1.8.7`
+- GitHub release `0.3.1` should include `main.js`, `manifest.json`, and `styles.css`
 
 Official references:
 
