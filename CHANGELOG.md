@@ -7,7 +7,7 @@ All notable changes to Git Viewer are documented here.
 - Raise the minimum Obsidian version to match the workspace API used by the sidebar reveal flow.
 - Shorten command IDs and command names for Community review.
 - Await the sidebar reveal promise and remove redundant DOM element assertions.
-- Rebuild release assets through the attestation-enabled release workflow.
+- Rebuild release assets for Community review; artifact attestations require account-level GitHub Actions to be enabled.
 
 ## 0.3.0 - 2026-06-08
 
