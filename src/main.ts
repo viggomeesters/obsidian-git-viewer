@@ -256,7 +256,7 @@ class GitViewerView extends ItemView {
       banner.createSpan({ text: `Last commit ${lastCommitHash.slice(0, 7)}` });
       const viewButton = banner.createEl("button", {
         cls: "git-viewer__link-button",
-        text: "View in History",
+        text: "View in history",
       });
       viewButton.addEventListener("click", () => {
         this.activeTab = "history";

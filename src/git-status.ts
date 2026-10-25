@@ -350,7 +350,7 @@ function formatGitCommandError(args: string[], error: unknown): string {
   if (isNodeExecError(error)) {
     const stderr = bufferOrStringToText(error.stderr).trim();
     if (stderr) return `git ${args.join(" ")} failed: ${stderr}`;
-    if (error.code) return `git ${args.join(" ")} failed with code ${String(error.code)}`;
+    if (typeof error.code === "string" || typeof error.code === "number") return `git ${args.join(" ")} failed with code ${String(error.code)}`;
   }
   if (error instanceof Error && error.message.trim()) {
     return `git ${args.join(" ")} failed: ${error.message}`;

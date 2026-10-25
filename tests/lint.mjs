@@ -9,7 +9,7 @@ const main = fs.readFileSync("src/main.ts", "utf8");
 const gitStatus = fs.readFileSync("src/git-status.ts", "utf8");
 const styles = fs.readFileSync("styles.css", "utf8");
 
-assert.equal(packageJson.scripts.build, "NODE_ENV=production node esbuild.config.mjs");
+assert.equal(packageJson.scripts.build, "node esbuild.config.mjs production");
 assert.equal(packageJson.scripts.typecheck, "tsc --noEmit");
 assert.equal(packageJson.scripts.lint, "node tests/lint.mjs");
 assert.equal(manifest.id, "git-viewer");
@@ -38,7 +38,7 @@ assert.match(main, /Select all/);
 assert.match(main, /Unselect all/);
 assert.match(main, /Commit selected/);
 assert.match(main, /History/);
-assert.match(main, /View in History/);
+assert.match(main, /View in history/);
 assert.match(main, /await this\.app\.workspace\.revealLeaf\(leaf\)/);
 assert.match(readme, /- pull/);
 assert.match(readme, /git log/);

@@ -67,11 +67,9 @@ Git Viewer does not use a naive `git add <files> && git commit` flow, because th
 
 ### Community plugin directory
 
-Git Viewer is ready for submission to the Obsidian Community plugin directory. Once accepted, it can be installed from **Settings -> Community plugins -> Browse** inside Obsidian.
+Install from the [Obsidian Community directory](https://community.obsidian.md/plugins/git-viewer) or search for Git Viewer in Settings → Community plugins → Browse.
 
 ### Manual installation
-
-Until the community directory submission is accepted:
 
 1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/viggomeesters/obsidian-git-viewer/releases/latest).
 2. Create this folder in your vault: `.obsidian/plugins/git-viewer/`.
@@ -128,29 +126,9 @@ Obsidian installs community plugin files from GitHub releases. For each release:
 
 The repository includes a GitHub Actions release workflow with artifact attestation support. If GitHub Actions is disabled for the owner account, manual releases are still usable for Obsidian, but the Community automated review may show a recommendation about missing artifact attestations.
 
-## Community directory submission
+## Community directory
 
-The repository is prepared for Obsidian Community plugin submission. The remaining submission step must be completed by the repository owner in the Obsidian Community site because it requires signing in, linking GitHub, and confirming the developer policies/support commitment.
-
-Submit this repository URL:
-
-```text
-https://github.com/viggomeesters/obsidian-git-viewer
-```
-
-The current release is ready for review:
-
-- root `README.md`, `LICENSE`, and `manifest.json` exist
-- `manifest.json.id` is `git-viewer`
-- `manifest.json.version` is `0.3.1`
-- `versions.json` maps `0.3.1` to Obsidian `1.8.7`
-- GitHub release `0.3.1` should include `main.js`, `manifest.json`, and `styles.css`
-
-Official references:
-
-- [Submit your plugin](https://docs.obsidian.md/Plugins/Releasing/Submit%20your%20plugin)
-- [Manifest](https://docs.obsidian.md/Reference/Manifest)
-- [Obsidian releases repository](https://github.com/obsidianmd/obsidian-releases)
+Git Viewer is listed in the [Obsidian Community directory](https://community.obsidian.md/plugins/git-viewer).
 
 ## Security and privacy
 
