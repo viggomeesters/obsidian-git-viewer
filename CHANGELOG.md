@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2 - 2026-10-25
+
+- Cross-platform production build.
+- Current Community installation documentation.
+
+
 All notable changes to Git Viewer are documented here.
 
 ## 0.3.1 - 2026-06-09

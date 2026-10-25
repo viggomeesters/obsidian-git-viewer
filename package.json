@@ -1,6 +1,6 @@
 {
   "name": "obsidian-git-viewer",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Lightweight Git status, history, and selected-file commits for Obsidian.",
   "license": "MIT",
   "author": "Viggo Meesters",
@@ -14,11 +14,11 @@
   "homepage": "https://github.com/viggomeesters/obsidian-git-viewer#readme",
   "type": "module",
   "scripts": {
-    "build": "NODE_ENV=production node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production",
     "dev": "node esbuild.config.mjs",
     "lint": "node tests/lint.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "node tests/git-status.test.mjs && node tests/smoke-test.mjs && node tests/headless-qa.mjs"
+    "test": "npm run build && node tests/git-status.test.mjs && node tests/smoke-test.mjs && node tests/headless-qa.mjs"
   },
   "dependencies": {},
   "devDependencies": {

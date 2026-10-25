@@ -25,7 +25,7 @@ assert.match(main, /Select all/);
 assert.match(main, /Unselect all/);
 assert.match(main, /Commit selected/);
 assert.match(main, /History/);
-assert.match(main, /View in History/);
+assert.match(main, /View in history/);
 assert.equal(main.includes("git push"), false);
 assert.equal(main.includes("git pull"), false);
 assert.equal(main.includes("git fetch"), false);

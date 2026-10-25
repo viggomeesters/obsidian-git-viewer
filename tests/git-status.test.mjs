@@ -1,3 +1,4 @@
+import { pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
@@ -30,7 +31,7 @@ const {
   parseGitShow,
   parsePorcelainV1z,
   toVaultRelativePath,
-} = await import(path.resolve(outfile));
+} = await import(pathToFileURL(path.resolve(outfile)).href);
 
 const fixture = [
   " M changed.md",

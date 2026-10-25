@@ -1,3 +1,4 @@
+import { pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
@@ -21,7 +22,7 @@ await esbuild.build({
   platform: "node",
   target: "es2022",
 });
-const { groupEntries, parsePorcelainV1z } = await import(path.resolve(outfile));
+const { groupEntries, parsePorcelainV1z } = await import(pathToFileURL(path.resolve(outfile)).href);
 
 const testVault = fs.mkdtempSync(path.join(os.tmpdir(), "git-viewer-vault-"));
 const obsidianDir = path.join(testVault, ".obsidian");
