@@ -132,9 +132,11 @@ Git Viewer is listed in the [Obsidian Community directory](https://community.obs
 
 ## Security and privacy
 
-Git Viewer runs local `git` commands against the current vault or repository. It does not make network requests and does not use clipboard APIs.
+Git Viewer is a desktop plugin with Node.js filesystem access and permission to start the local `git` executable. It uses `execFile` with separate command arguments, an eight-second timeout and no shell interpreter. These permissions are broader than the Obsidian vault API; they are required for repository inspection and selected-file commits. The plugin does not itself make network requests or use clipboard APIs.
 
-History is read-only and uses local `git log` and `git show --name-status`. The only write action is **Commit selected**. It creates a commit from explicitly selected paths through a temporary Git index, then refreshes the selected paths in the real index after the branch is advanced. It does not pull, push, clone, fetch, merge, rebase, discard, reset, or manage branches.
+Repository discovery runs `git rev-parse --show-toplevel` from the vault directory. If the vault is nested inside a larger repository, Git status and history operate at that ancestor repository root and may include paths outside the vault. Only files that Obsidian can resolve inside the vault can be opened in its editor. Use the plugin only with local repositories and Git configuration you trust; Git commands can apply configured filters or other configured Git behavior.
+
+History is read-only and uses local `git log` and `git show --name-status`. The explicit **Commit selected** action writes a new commit and advances the current branch; for an existing branch it checks the expected parent when updating the reference. The first commit in a repository has no existing parent to check. It creates a temporary index file in the operating system's temporary directory using `GIT_INDEX_FILE`, then removes that temporary file in `finally`. After advancing the branch it refreshes only the selected paths in the real Git index with `git reset -q -- <paths>`; unrelated staged entries remain untouched. This selected-path index refresh does not reset the branch or discard working files. The plugin offers no pull, push, clone, fetch, merge, rebase, discard or branch-management action.
 
 ## License
 
