@@ -16,7 +16,7 @@
   "scripts": {
     "build": "node esbuild.config.mjs production",
     "dev": "node esbuild.config.mjs",
-    "lint": "eslint .",
+    "lint": "node tests/lint.mjs && eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "npm run build && node tests/git-status.test.mjs && node tests/smoke-test.mjs && node tests/headless-qa.mjs"
   },
