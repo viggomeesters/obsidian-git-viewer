@@ -11,7 +11,7 @@ const styles = fs.readFileSync("styles.css", "utf8");
 
 assert.equal(packageJson.scripts.build, "node esbuild.config.mjs production");
 assert.equal(packageJson.scripts.typecheck, "tsc --noEmit");
-assert.equal(packageJson.scripts.lint, "node tests/lint.mjs");
+assert.equal(packageJson.scripts.lint, "node tests/lint.mjs && eslint . --max-warnings=0");
 assert.equal(manifest.id, "git-viewer");
 assert.equal(manifest.isDesktopOnly, true);
 assert.match(manifest.description, /history/i);
